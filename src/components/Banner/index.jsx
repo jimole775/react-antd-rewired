@@ -4,7 +4,7 @@ import React, { Component } from 'react'
 import TweenOne from 'rc-tween-one'
 import ticker from 'rc-tween-one/lib/ticker'
 import PropTypes from 'prop-types'
-import logo from '@/assets/images/login.png'
+import ReactPng from '@/assets/images/react.png'
 import './index.less'
 // @connect((state, props) => ({
 //   config: state.config,
@@ -19,7 +19,7 @@ export default class app extends Component {
   };
 
   static defaultProps = {
-    image: logo,
+    image: ReactPng,
     // className: 'logo-gather-demo',
     w: 1038,
     h: 280,
@@ -56,7 +56,6 @@ export default class app extends Component {
 
   onMouseLeave = () => {
     // this.gather && this.updateTweenData();
-    debugger
     if (this.gather) {
       this.updateTweenData();
     }
@@ -105,13 +104,21 @@ export default class app extends Component {
       this.interval = ticker.interval(this.updateTweenData, this.intervalTime);
     });
   }
-
-  createPointData = () => {
-    const { w, h } = this.props;
+  gotBannerImgInfo () {
+    return new Promise((resolv, reject) => {
+      const bannerimg = new Image();
+      bannerimg.src = ReactPng
+      bannerimg.onload = () => {
+        resolv(bannerimg)
+      }
+    })
+  }
+  async createPointData () {
+    const { width: w, height: h } = await this.gotBannerImgInfo()
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, w, h);
-    canvas.width = this.props.w;
+    canvas.width = w;
     canvas.height = h;
     const img = new Image();
     img.onload = () => {
