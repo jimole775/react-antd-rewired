@@ -30,15 +30,15 @@ class TableComponent extends Component {
     },
     editModalVisible: false,
     editModalLoading: false,
-    currentRowData: {
-      id: 0,
-      author: "",
-      date: "",
-      readings: 0,
-      star: "★",
-      status: "published",
-      title: ""
-    }
+    // currentRowData: {
+    //   id: 0,
+    //   author: "",
+    //   date: "",
+    //   readings: 0,
+    //   star: "★",
+    //   status: "published",
+    //   title: ""
+    // }
   }
   fetchData = () => {
     this.setState({ loading: true })
@@ -116,12 +116,12 @@ class TableComponent extends Component {
       this.fetchData()
     })
   }
-  handleEdit = (row) => {
-    this.setState({
-      currentRowData: Object.assign({}, row),
-      editModalVisible: true,
-    })
-  }
+  // handleEdit = (row) => {
+  //   this.setState({
+  //     currentRowData: Object.assign({}, row),
+  //     editModalVisible: true,
+  //   })
+  // }
   handleOk = _ => {
     const { form } = this.formRef.props;
     form.validateFields((err, fieldsValue) => {
