@@ -26,7 +26,7 @@ class TableComponent extends Component {
       pageSize: 10,
       title: "",
       star: "",
-      status:""
+      status: ""
     },
     editModalVisible: false,
     editModalLoading: false,
@@ -160,7 +160,6 @@ class TableComponent extends Component {
               </Form.Item>
               <Form.Item label="类型:">
                 <Select
-                  style={{ width: 120 }}
                   onChange={this.filterStatusChange}>
                   <Select.Option value="published">published</Select.Option>
                   <Select.Option value="draft">draft</Select.Option>
@@ -168,7 +167,6 @@ class TableComponent extends Component {
               </Form.Item>
               <Form.Item label="推荐指数:">
                 <Select
-                  style={{ width: 120 }}
                   onChange={this.filterStarChange}>
                   <Select.Option value={1}>★</Select.Option>
                   <Select.Option value={2}>★★</Select.Option>
@@ -206,7 +204,7 @@ class TableComponent extends Component {
             );
           }}/>
           <Column title="时间" dataIndex="date" key="date" width={195} align="center"/>
-          <Column title="操作" key="action" width={195} align="center"render={(text, row) => (
+          <Column title="操作" key="action" width={195} align="center" render={(text, row) => (
             <span>
               <Button type="primary" shape="circle" icon="edit" title="编辑" onClick={this.handleEdit.bind(null,row)}/>
               <Divider type="vertical" />

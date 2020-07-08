@@ -125,6 +125,12 @@ const menuList = [
     roles:["admin","editor"]
   },
   {
+    title: "股票",
+    path: "/stock",
+    icon: "table",
+    roles:["admin"]
+  },
+  {
     title: "Excel",
     path: "/excel",
     icon: "file-excel",

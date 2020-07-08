@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from "react"
 import {
   Table,
   Tag,
@@ -11,8 +11,8 @@ import {
   message,
   Select
 } from "antd"
-import { tableList, deleteItem,editItem } from "@/api/table"
-import EditForm from "./forms/editForm"
+import { tableList, deleteItem, editItem } from "@/api/table"
+// import EditForm from "./forms/editForm"
 const { Column } = Table
 const { Panel } = Collapse
 class TableComponent extends Component {
@@ -197,22 +197,21 @@ class TableComponent extends Component {
           <Column title="阅读量" dataIndex="readings" key="readings" width={195} align="center"/>
           <Column title="推荐指数" dataIndex="star" key="star" width={195} align="center"/>
           <Column title="状态" dataIndex="status" key="status" width={195} align="center" render={(status) => {
-            let color =
-              status === "published" ? "green" : status === "deleted" ? "red" : "";
+            let color = status === "published" ? "green" : status === "deleted" ? "red" : ""
             return (
               <Tag color={color} key={status}>
                 {status}
               </Tag>
-            );
+            )
           }}/>
           <Column title="时间" dataIndex="date" key="date" width={195} align="center"/>
-          <Column title="操作" key="action" width={195} align="center"render={(text, row) => (
+          {/* <Column title="操作" key="action" width={195} align="center"render={(text, row) => (
             <span>
               <Button type="primary" shape="circle" icon="edit" title="编辑" onClick={this.handleEdit.bind(null,row)}/>
               <Divider type="vertical" />
               <Button type="primary" shape="circle" icon="delete" title="删除" onClick={this.handleDelete.bind(null,row)}/>
             </span>
-          )}/>
+          )}/> */}
         </Table>
         <br />
         <Pagination
@@ -226,17 +225,17 @@ class TableComponent extends Component {
           showQuickJumper
           hideOnSinglePage={true}
         />
-        <EditForm
+        {/* <EditForm
           currentRowData={this.state.currentRowData}
           wrappedComponentRef={formRef => this.formRef = formRef}
           visible={this.state.editModalVisible}
           confirmLoading={this.state.editModalLoading}
           onCancel={this.handleCancel}
           onOk={this.handleOk}
-        />  
+        />   */}
       </div>
     );
   }
-}
+};
 
 export default TableComponent;
