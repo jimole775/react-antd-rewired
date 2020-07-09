@@ -9,7 +9,7 @@ import './index.less'
 // @connect((state, props) => ({
 //   config: state.config,
 // }))
-export default class app extends Component {
+export default class Banner extends Component {
   static propTypes = {
     image: PropTypes.string,
     w: PropTypes.number,
@@ -33,6 +33,7 @@ export default class app extends Component {
     this.interval = null;
     this.gather = true;
     this.intervalTime = 9000;
+    console.log(this.props)
   }
 
   componentDidMount() {
@@ -180,6 +181,7 @@ export default class app extends Component {
 
   render() {
     return (<div className="logo-gather-demo-wrapper" ref={c => this.componentDom = c}>
+      {/* {this.props.children} */}
       <canvas id="canvas" />
       <TweenOne
         animation={this.state.boxAnim}

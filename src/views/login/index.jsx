@@ -53,7 +53,7 @@ const Login = (props) => {
   return (
     <DocumentTitle title={"用户登录"}>
       <div className="login-container">
-        <div className="logo-wrapper"><Banner /></div>
+        <div className="logo-wrapper"><Banner><div slot="test">test</div><div slot="test1">test1</div></Banner></div>
         <div className="form-warpper">
           <Form onSubmit={handleSubmit} className="content">
             <Spin spinning={loading} tip="登录中...">

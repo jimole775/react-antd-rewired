@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, ReactDOM } from "react";
 import {
   Table,
   Tag,
@@ -11,11 +11,25 @@ import {
   message,
   Select
 } from "antd"
-import { tableList, deleteItem,editItem } from "@/api/table"
-import EditForm from "./forms/editForm"
-const { Column } = Table
+import { tableList, deleteItem, editItem } from "@/api/table"
+import { PropTypes } from "prop-types";
+// import EditForm from "./forms/editForm"
+// const { Column } = Table
 const { Panel } = Collapse
-class TableComponent extends Component {
+
+export default class TableComponent extends Component {
+  static propTypes = {
+    queryFields: PropTypes.object,
+    pagination: PropTypes.bool,
+    searcher: PropTypes.object
+  }
+
+  static defaultProps = {
+    queryFields: {},
+    pagination: false,
+    searcher: {}
+  }
+
   _isMounted = false // 这个变量是用来标志当前组件是否挂载
   state = {
     list: [],
@@ -24,65 +38,71 @@ class TableComponent extends Component {
     listQuery: {
       pageNumber: 1,
       pageSize: 10,
-      title: "",
-      star: "",
-      status: ""
     },
     editModalVisible: false,
     editModalLoading: false,
-    currentRowData: {
-      id: 0,
-      author: "",
-      date: "",
-      readings: 0,
-      star: "★",
-      status: "published",
-      title: ""
-    }
+    // currentRowData: {
+    //   id: 0,
+    //   author: "",
+    //   date: "",
+    //   readings: 0,
+    //   star: "★",
+    //   status: "published",
+    //   title: ""
+    // }
   }
-  fetchData = () => {
-    this.setState({ loading: true })
-    tableList(this.state.listQuery).then((response) => {
-      this.setState({ loading: false })
-      const list = response.data.data.items
-      const total = response.data.data.total
-      if (this._isMounted) {
-        this.setState({ list, total })
-      }
-    })
+  async fetchData () {
+    if (this._isMounted && this.state.loading === false) {
+      this.setState({ loading: true })
+      Object.keys(this.props.searcher).forEach((key) => {
+        this.setState({ listQuery: { [key]: this.props.searcher[key]['value'] }})
+      })
+      const res = await tableList(this.state.listQuery)
+      const list = res.data.data.items
+      const total = res.data.data.total
+      this.setState({ list, total, loading: false })
+    }
+    return Promise.resolve()
   }
   componentDidMount() {
     this._isMounted = true
     this.fetchData()
   }
-  componentWillUnmount() {
+  componentWillUnmount () {
     this._isMounted = false
+    this.setState = () => false
+    this.fetchData = () => false
   }
-  filterTitleChange = (e) => {
-    let value = e.target.value
-    this.setState((state) => ({
-      listQuery: {
-        ...state.listQuery,
-        title: value,
-      }
-    }))
+
+  async componentDidUpdate (prevProps, newProps, nextP) {
+    console.log('prevProps:', prevProps, newProps, nextP)
+    // await this.fetchData()
   }
-  filterStatusChange = (value) => {
-    this.setState((state) => ({
-      listQuery: {
-        ...state.listQuery,
-        status: value,
-      }
-    }))
-  }
-  filterStarChange  = (value) => {
-    this.setState((state) => ({
-      listQuery: {
-        ...state.listQuery,
-        star: value,
-      }
-    }))
-  }
+  // filterTitleChange = (e) => {
+  //   let value = e.target.value
+  //   this.setState((state) => ({
+  //     listQuery: {
+  //       ...state.listQuery,
+  //       title: value,
+  //     }
+  //   }))
+  // }
+  // filterStatusChange = (value) => {
+  //   this.setState((state) => ({
+  //     listQuery: {
+  //       ...state.listQuery,
+  //       status: value,
+  //     }
+  //   }))
+  // }
+  // filterStarChange  = (value) => {
+  //   this.setState((state) => ({
+  //     listQuery: {
+  //       ...state.listQuery,
+  //       star: value,
+  //     }
+  //   }))
+  // }
   changePage = (pageNumber, pageSize) => {
     this.setState(
       (state) => ({
@@ -110,69 +130,69 @@ class TableComponent extends Component {
       }
     )
   }
-  handleDelete = (row) => {
-    deleteItem({ id: row.id }).then(res => {
-      message.success("删除成功")
-      this.fetchData()
+  // handleDelete = (row) => {
+  //   deleteItem({ id: row.id }).then(res => {
+  //     message.success("删除成功")
+  //     this.fetchData()
+  //   })
+  // }
+  // handleEdit = (row) => {
+  //   this.setState({
+  //     currentRowData: Object.assign({}, row),
+  //     editModalVisible: true,
+  //   })
+  // }
+  // handleOk = _ => {
+  //   const { form } = this.formRef.props;
+  //   form.validateFields((err, fieldsValue) => {
+  //     if (err) {
+  //       return
+  //     }
+  //     const values = {
+  //       ...fieldsValue,
+  //       'star': "".padStart(fieldsValue['star'], '★'),
+  //       'date': fieldsValue['date'].format('YYYY-MM-DD HH:mm:ss'),
+  //     }
+  //     this.setState({ editModalLoading: true, })
+  //     editItem(values).then((response) => {
+  //       form.resetFields()
+  //       this.setState({ editModalVisible: false, editModalLoading: false })
+  //       message.success("编辑成功!")
+  //       this.fetchData()
+  //     }).catch(e => {
+  //       message.success("编辑失败,请重试!")
+  //     })
+  //   })
+  // }
+  // handleCancel = _ => {
+  //   this.setState({
+  //     editModalVisible: false,
+  //   })
+  // }
+  getSlots ({ children = [] }) {
+    const templates = children.filter((item) => {
+      return item.type === 'template'
     })
-  }
-  handleEdit = (row) => {
-    this.setState({
-      currentRowData: Object.assign({}, row),
-      editModalVisible: true,
+    let SearchSlot = templates.filter((item) => {
+      return item.props.slot === 'SearchBar'
     })
-  }
-  handleOk = _ => {
-    const { form } = this.formRef.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) {
-        return
-      }
-      const values = {
-        ...fieldsValue,
-        'star': "".padStart(fieldsValue['star'], '★'),
-        'date': fieldsValue['date'].format('YYYY-MM-DD HH:mm:ss'),
-      }
-      this.setState({ editModalLoading: true, })
-      editItem(values).then((response) => {
-        form.resetFields()
-        this.setState({ editModalVisible: false, editModalLoading: false })
-        message.success("编辑成功!")
-        this.fetchData()
-      }).catch(e => {
-        message.success("编辑失败,请重试!")
-      })
+    let TableSlot = templates.filter((item) => {
+      return item.props.slot === 'Columns'
     })
+
+    SearchSlot = SearchSlot && SearchSlot.length ? SearchSlot[0].props.children : ''
+    TableSlot = TableSlot && TableSlot.length ? TableSlot[0].props.children : ''
+    return { SearchSlot, TableSlot }
   }
-  handleCancel = _ => {
-    this.setState({
-      editModalVisible: false,
-    })
-  }
+
   render() {
+    const { SearchSlot, TableSlot } = this.getSlots(this.props)
     return (
       <div className="app-container">
-        <Collapse defaultActiveKey={["1"]}>
+        {SearchSlot && <Collapse defaultActiveKey={["1"]}>
           <Panel header="筛选" key="1">
             <Form layout="inline">
-              <Form.Item label="标题:">
-                <Input onChange={this.filterTitleChange} />
-              </Form.Item>
-              <Form.Item label="类型:">
-                <Select
-                  onChange={this.filterStatusChange}>
-                  <Select.Option value="published">published</Select.Option>
-                  <Select.Option value="draft">draft</Select.Option>
-                </Select>
-              </Form.Item>
-              <Form.Item label="推荐指数:">
-                <Select
-                  onChange={this.filterStarChange}>
-                  <Select.Option value={1}>★</Select.Option>
-                  <Select.Option value={2}>★★</Select.Option>
-                  <Select.Option value={3}>★★★</Select.Option>
-                </Select>
-              </Form.Item>
+              {SearchSlot}
               <Form.Item>
                 <Button type="primary" icon="search" onClick={this.fetchData}>
                   搜索
@@ -180,16 +200,17 @@ class TableComponent extends Component {
               </Form.Item>
             </Form>
           </Panel>
-        </Collapse>
+        </Collapse>}
         <br />
         <Table
           bordered
-          rowKey={(record) => record.id}
-          dataSource={this.state.list}
-          loading={this.state.loading}
-          pagination={false}
+          rowKey={this.props.rowKey}
+          dataSource={this.props.dataSource}
+          loading={this.props.loading}
+          pagination={false} /* 不使用table的原生分页 */
         >
-          <Column title="序号" dataIndex="id" key="id" width={200} align="center" sorter={(a, b) => a.id - b.id}/>
+          {TableSlot}
+          {/* <Column title="序号" dataIndex="id" key="id" width={200} align="center" sorter={(a, b) => a.id - b.id}/>
           <Column title="标题" dataIndex="title" key="title" width={200} align="center"/>
           <Column title="作者" dataIndex="author" key="author" width={100} align="center"/>
           <Column title="阅读量" dataIndex="readings" key="readings" width={195} align="center"/>
@@ -210,10 +231,10 @@ class TableComponent extends Component {
               <Divider type="vertical" />
               <Button type="primary" shape="circle" icon="delete" title="删除" onClick={this.handleDelete.bind(null,row)}/>
             </span>
-          )}/>
+          )}/> */}
         </Table>
         <br />
-        <Pagination
+        {this.props.pagination && <Pagination
           total={this.state.total}
           pageSizeOptions={["10", "20", "40"]}
           showTotal={(total) => `共${total}条数据`}
@@ -223,18 +244,16 @@ class TableComponent extends Component {
           showSizeChanger
           showQuickJumper
           hideOnSinglePage={true}
-        />
-        <EditForm
+        />}
+        {/* <EditForm
           currentRowData={this.state.currentRowData}
           wrappedComponentRef={formRef => this.formRef = formRef}
           visible={this.state.editModalVisible}
           confirmLoading={this.state.editModalLoading}
           onCancel={this.handleCancel}
           onOk={this.handleOk}
-        />  
+        />   */}
       </div>
     );
   }
 }
-
-export default TableComponent;
