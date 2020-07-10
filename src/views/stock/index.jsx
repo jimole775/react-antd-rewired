@@ -29,91 +29,71 @@ class TableComponent extends Component {
       star: "",
       status:""
     },
-    searchItems: {
-      title: {
+    searchor: [
+      {
         title: '标题',
         key: 'title',
         type: 'input',
         value: '',
-        style: {}
+        style: {},
       },
-      status: {
-        title: '状态',
+      {
+        title: '类型',
         key: 'status',
         type: 'select',
         value: '',
-        style: { width: 120 }
+        style: { width: 120 },
+        dict: 'status'
       },
-    },
+      {
+        title: '推荐指数',
+        key: 'star',
+        type: 'select',
+        value: '',
+        style: { width: 120 },
+        dict: ''
+      },
+    ],
     editModalVisible: false,
     editModalLoading: false,
-    // currentRowData: {
-    //   id: 0,
-    //   author: "",
-    //   date: "",
-    //   readings: 0,
-    //   star: "★",
-    //   status: "published",
-    //   title: ""
-    // }
-  }
-  fetchData = () => {
-    this.setState({ loading: true })
-    tableList(this.state.listQuery).then((response) => {
-      this.setState({ loading: false })
-      const list = response.data.data.items
-      const total = response.data.data.total
-      if (this._isMounted) {
-        this.setState({ list, total })
-      }
-    })
   }
   componentDidMount() {
     this._isMounted = true
-    this.fetchData()
   }
   componentWillUnmount() {
     this._isMounted = false
   }
-  searchmonitor (e) {
-    console.log(e)
+  searchmonitor (key, val) {
+    debugger
+    const searchs = [...this.state.searchor]
+    searchs.forEach((item, index) => {
+      if (item.key === key) {
+        item.value = val
+      }
+    })
+    this.setState({
+      searchor: searchs
+    })
   }
   render() {
     return (
       <TTable
         bordered
         rowKey={(record) => record.id}
-        dataSource={this.state.list}
-        loading={this.state.loading}
-        searchItems={this.state.searchItems}
+        searchor={this.state.searchor}
         pagination={true}
       >
         <template slot="SearchBar">
-          <Form.Item label="标题:">
-            <Input onChange={this.searchmonitor} />
-          </Form.Item>
-          <Form.Item label="类型:">
-            <Select
-              style={{ width: 120 }}
-              onChange={this.filterStatusChange}>
-              <Select.Option value="published">published</Select.Option>
-              <Select.Option value="draft">draft</Select.Option>
-            </Select>
-          </Form.Item>
           <Form.Item label="推荐指数:">
             <Select
+              allowClear
               style={{ width: 120 }}
-              onChange={this.filterStarChange}>
+              onChange={(val) => this.searchmonitor('star', val)}>
               <Select.Option value={1}>★</Select.Option>
               <Select.Option value={2}>★★</Select.Option>
               <Select.Option value={3}>★★★</Select.Option>
             </Select>
           </Form.Item>
-          {/* <Form.Item>
-            <Button type="primary" icon="search" onClick={this.fetchData}>
-              搜索
-            </Button>
-          </Form.Item> */}
         </template>
         <br />
         <template slot="Columns">

@@ -19,15 +19,13 @@ const { Panel } = Collapse
 
 export default class TableComponent extends Component {
   static propTypes = {
-    queryFields: PropTypes.object,
     pagination: PropTypes.bool,
-    searcher: PropTypes.object
+    searchor: PropTypes.array
   }
 
   static defaultProps = {
-    queryFields: {},
     pagination: false,
-    searcher: {}
+    searchor: null
   }
 
   _isMounted = false // 这个变量是用来标志当前组件是否挂载
@@ -41,22 +39,11 @@ export default class TableComponent extends Component {
     },
     editModalVisible: false,
     editModalLoading: false,
-    // currentRowData: {
-    //   id: 0,
-    //   author: "",
-    //   date: "",
-    //   readings: 0,
-    //   star: "★",
-    //   status: "published",
-    //   title: ""
-    // }
   }
+
   async fetchData () {
     if (this._isMounted && this.state.loading === false) {
       this.setState({ loading: true })
-      Object.keys(this.props.searcher).forEach((key) => {
-        this.setState({ listQuery: { [key]: this.props.searcher[key]['value'] }})
-      })
       const res = await tableList(this.state.listQuery)
       const list = res.data.data.items
       const total = res.data.data.total
@@ -64,45 +51,32 @@ export default class TableComponent extends Component {
     }
     return Promise.resolve()
   }
-  componentDidMount() {
+
+  componentDidMount () {
     this._isMounted = true
     this.fetchData()
   }
+
   componentWillUnmount () {
     this._isMounted = false
     this.setState = () => false
     this.fetchData = () => false
   }
 
-  async componentDidUpdate (prevProps, newProps, nextP) {
-    console.log('prevProps:', prevProps, newProps, nextP)
-    // await this.fetchData()
+  async componentDidUpdate (prevProps) {
+    if (this.props.searchor && prevProps.searchor !== this.props.searchor) {
+      this.props.searchor.forEach((item, index) => {
+        this.setState((state) => {
+          const res = {}
+          if (item.value) {
+            res[item.key] = item.value
+          }
+          return { listQuery: { ...state.listQuery, ...res } }
+        })
+      })
+    }
   }
-  // filterTitleChange = (e) => {
-  //   let value = e.target.value
-  //   this.setState((state) => ({
-  //     listQuery: {
-  //       ...state.listQuery,
-  //       title: value,
-  //     }
-  //   }))
-  // }
-  // filterStatusChange = (value) => {
-  //   this.setState((state) => ({
-  //     listQuery: {
-  //       ...state.listQuery,
-  //       status: value,
-  //     }
-  //   }))
-  // }
-  // filterStarChange  = (value) => {
-  //   this.setState((state) => ({
-  //     listQuery: {
-  //       ...state.listQuery,
-  //       star: value,
-  //     }
-  //   }))
-  // }
+
   changePage = (pageNumber, pageSize) => {
     this.setState(
       (state) => ({
@@ -112,10 +86,12 @@ export default class TableComponent extends Component {
         },
       }),
       () => {
+        console.log('this.changePage')
         this.fetchData()
       }
     )
   }
+
   changePageSize = (current, pageSize) => {
     this.setState(
       (state) => ({
@@ -126,6 +102,7 @@ export default class TableComponent extends Component {
         },
       }),
       () => {
+        console.log('this.changePageSize')
         this.fetchData()
       }
     )
@@ -169,32 +146,72 @@ export default class TableComponent extends Component {
   //     editModalVisible: false,
   //   })
   // }
-  getSlots ({ children = [] }) {
+  getSlots (children = []) {
     const templates = children.filter((item) => {
       return item.type === 'template'
     })
-    let SearchSlot = templates.filter((item) => {
+
+    if (!templates || templates.length === 0) return ''
+
+    let SearchChildren = templates.filter((item) => {
       return item.props.slot === 'SearchBar'
     })
-    let TableSlot = templates.filter((item) => {
+
+    let TableChildren = templates.filter((item) => {
       return item.props.slot === 'Columns'
     })
 
-    SearchSlot = SearchSlot && SearchSlot.length ? SearchSlot[0].props.children : ''
-    TableSlot = TableSlot && TableSlot.length ? TableSlot[0].props.children : ''
-    return { SearchSlot, TableSlot }
+    SearchChildren = SearchChildren && SearchChildren.length ? SearchChildren[0].props.children : ''
+    TableChildren = TableChildren && TableChildren.length ? TableChildren[0].props.children : ''
+    return { SearchChildren, TableChildren }
+  }
+
+  searchfieldsmonitor (key, val) {
+    this.setState((state) => {
+      return { listQuery: { ...state.listQuery, [key]: val } }
+    })
+  }
+
+  createSearchBar (searchor = []) {
+    const searchNodes = []
+    searchor.forEach((searchItem) => {
+      if (searchItem.type === 'input') {
+        searchNodes.push(
+          <Form.Item label={searchItem.title}>
+            <Input allowClear onChange={(e) => this.searchfieldsmonitor(searchItem.key, e.currentTarget.value)} />
+          </Form.Item>
+        )
+      }
+
+      if (searchItem.type === 'select') {
+        searchNodes.push(
+          <Form.Item label={searchItem.title}>
+            <Select
+              allowClear
+              style={{ width: 120 }}
+              onChange={(val) => this.searchfieldsmonitor(searchItem.key, val)}>
+              <Select.Option value="published">published</Select.Option>
+              <Select.Option value="draft">draft</Select.Option>
+            </Select>
+          </Form.Item>
+        )
+      }
+    })
+    return searchNodes
   }
 
   render() {
-    const { SearchSlot, TableSlot } = this.getSlots(this.props)
+    const { SearchChildren, TableChildren } = this.getSlots(this.props.children)
+    // todo 搜索栏vNode生成
     return (
       <div className="app-container">
-        {SearchSlot && <Collapse defaultActiveKey={["1"]}>
+        {(SearchChildren || this.props.searchor) && <Collapse defaultActiveKey={["1"]}>
           <Panel header="筛选" key="1">
             <Form layout="inline">
-              {SearchSlot}
+              {this.createSearchBar(this.props.searchor)}
+              {SearchChildren}
               <Form.Item>
-                <Button type="primary" icon="search" onClick={this.fetchData}>
+                <Button type="primary" icon="search" onClick={() => this.fetchData.call(this)}>
                   搜索
                 </Button>
               </Form.Item>
@@ -204,12 +221,12 @@ export default class TableComponent extends Component {
         <br />
         <Table
           bordered
+          dataSource={this.state.list}
+          loading={this.state.loading}
           rowKey={this.props.rowKey}
-          dataSource={this.props.dataSource}
-          loading={this.props.loading}
           pagination={false} /* 不使用table的原生分页 */
         >
-          {TableSlot}
+          {TableChildren}
           {/* <Column title="序号" dataIndex="id" key="id" width={200} align="center" sorter={(a, b) => a.id - b.id}/>
           <Column title="标题" dataIndex="title" key="title" width={200} align="center"/>
           <Column title="作者" dataIndex="author" key="author" width={100} align="center"/>
