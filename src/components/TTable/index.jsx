@@ -20,12 +20,14 @@ const { Panel } = Collapse
 export default class TableComponent extends Component {
   static propTypes = {
     pagination: PropTypes.bool,
-    searchor: PropTypes.array
+    searchor: PropTypes.array,
+    columns: PropTypes.array,
   }
 
   static defaultProps = {
     pagination: false,
-    searchor: null
+    searchor: null,
+    columns: null,
   }
 
   _isMounted = false // 这个变量是用来标志当前组件是否挂载
@@ -60,7 +62,6 @@ export default class TableComponent extends Component {
   componentWillUnmount () {
     this._isMounted = false
     this.setState = () => false
-    this.fetchData = () => false
   }
 
   async componentDidUpdate (prevProps) {
@@ -174,27 +175,17 @@ export default class TableComponent extends Component {
 
   createSearchBar (searchor = []) {
     const searchNodes = []
-    searchor.forEach((searchItem) => {
+    searchor.forEach((searchItem, index) => {
       if (searchItem.type === 'input') {
         searchNodes.push(
-          <Form.Item label={searchItem.title}>
+          <Form.Item label={searchItem.title} key={index}>
             <Input allowClear onChange={(e) => this.searchfieldsmonitor(searchItem.key, e.currentTarget.value)} />
           </Form.Item>
         )
       }
 
       if (searchItem.type === 'select') {
-        searchNodes.push(
-          <Form.Item label={searchItem.title}>
-            <Select
-              allowClear
-              style={{ width: 120 }}
-              onChange={(val) => this.searchfieldsmonitor(searchItem.key, val)}>
-              <Select.Option value="published">published</Select.Option>
-              <Select.Option value="draft">draft</Select.Option>
-            </Select>
-          </Form.Item>
-        )
+        searchNodes.push('')
       }
     })
     return searchNodes
@@ -224,6 +215,7 @@ export default class TableComponent extends Component {
           dataSource={this.state.list}
           loading={this.state.loading}
           rowKey={this.props.rowKey}
+          columns={this.props.columns}
           pagination={false} /* 不使用table的原生分页 */
         >
           {TableChildren}
@@ -260,7 +252,6 @@ export default class TableComponent extends Component {
           onShowSizeChange={this.changePageSize}
           showSizeChanger
           showQuickJumper
-          hideOnSinglePage={true}
         />}
         {/* <EditForm
           currentRowData={this.state.currentRowData}
