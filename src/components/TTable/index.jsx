@@ -22,12 +22,14 @@ export default class TableComponent extends Component {
     pagination: PropTypes.bool,
     searchor: PropTypes.array,
     columns: PropTypes.array,
+    fetchApi: PropTypes.func,
   }
 
   static defaultProps = {
     pagination: false,
     searchor: null,
     columns: null,
+    fetchApi: () => {},
   }
 
   _isMounted = false // 这个变量是用来标志当前组件是否挂载
@@ -46,7 +48,8 @@ export default class TableComponent extends Component {
   async fetchData () {
     if (this._isMounted && this.state.loading === false) {
       this.setState({ loading: true })
-      const res = await tableList(this.state.listQuery)
+      console.log(this.state.listQuery)
+      const res = await this.props.fetchApi(this.state.listQuery)
       const list = res.data.data.items
       const total = res.data.data.total
       this.setState({ list, total, loading: false })

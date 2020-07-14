@@ -27,12 +27,13 @@ class TableComponent extends Component {
     list: [],
     loading: false,
     total: 0,
+    fetchApi: getvline,
     listQuery: {
       pageNumber: 1,
       pageSize: 10,
       title: "",
       star: "",
-      status:""
+      status:"",
     },
     //     heavies, // 买入总额
     //     timeRange: `${rangeCans[0].t} ~ ${rangeCans[rangeCans.length - 1].t}`, // 买入总额
