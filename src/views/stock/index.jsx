@@ -34,7 +34,6 @@ class TableComponent extends Component {
       star: "",
       status:""
     },
-    
     //     heavies, // 买入总额
     //     timeRange: `${rangeCans[0].t} ~ ${rangeCans[rangeCans.length - 1].t}`, // 买入总额
     //     buy_p_v: (sum_buy_p / (sum_buy_v * 100)).toFixed(2), // 买入均价
@@ -47,46 +46,58 @@ class TableComponent extends Component {
     //     heavy_sal: heavy_sal // 大单卖出额
     columns: [
       {
-        title: () => <span style={{color:color.green}}> 主卖人 </span>,
-        dataIndex: 'author',
-        key: 'author',
+        title: '时间范围',
+        dataIndex: 'time_range',
+        key: 'time_range',
         width: 30
       },
       {
-        title: '测试2',
-        dataIndex: 'date',
-        key: 'date',
+        title: () => <span style={{color:color.red}}> 主买均价 </span>,
+        dataIndex: 'buy_p_v',
+        key: 'buy_p_v',
         width: 30
       },
       {
-        title: '测试3',
-        dataIndex: 'readings',
-        key: 'readings',
+        title: () => <span style={{color:color.green}}> 主卖均价 </span>,
+        dataIndex: 'sal_p_v',
+        key: 'sal_p_v',
         width: 30
       },
       {
-        title: '测试3',
-        dataIndex: 'star',
-        key: 'star',
+        title: () => <span style={{color:color.red}}> 主买总额 </span>,
+        dataIndex: 'sum_buy_p',
+        key: 'sum_buy_p',
         width: 30
       },
       {
-        title: '测试4',
-        dataIndex: 'status',
-        key: 'status',
-        width: 30,
+        title: () => <span style={{color:color.red}}> 主买手数 </span>,
+        dataIndex: 'sum_buy_v',
+        key: 'sum_buy_v',
+        width: 30
       },
       {
-        title: '测试5',
-        dataIndex: 'title',
-        key: 'title',
-        width: 30,
+        title: () => <span style={{color:color.red}}> 主卖总额 </span>,
+        dataIndex: 'sum_sal_p',
+        key: 'sum_sal_p',
+        width: 30
       },
       {
-        title: '测试5',
-        dataIndex: 'id',
-        key: 'id',
-        width: 30,
+        title: () => <span style={{color:color.red}}> 主卖手数 </span>,
+        dataIndex: 'sum_sal_v',
+        key: 'sum_sal_v',
+        width: 30
+      },
+      {
+        title: () => <span style={{color:color.red}}> 大单主买额 </span>,
+        dataIndex: 'heavy_buy',
+        key: 'heavy_buy',
+        width: 30
+      },
+      {
+        title: () => <span style={{color:color.red}}> 大单主卖额 </span>,
+        dataIndex: 'heavy_sal',
+        key: 'heavy_sal',
+        width: 30
       },
     ],
     searchor: [
@@ -166,31 +177,6 @@ class TableComponent extends Component {
           </Form.Item>
         </template>
         <br />
-        <template slot="Columns">
-          {/* <Column title="序号" dataIndex="id" key="id" width={200} align="center" sorter={(a, b) => a.id - b.id}/>
-          <Column title="时间阈值" dataIndex="timeRange" key="timeRange" width={200} align="center"/>
-          <Column title="主买均价" dataIndex="buy_p_v" key="buy_p_v" width={100} align="center" render={(buy_p_v) => {
-            return (
-              <span style={{color: color.red}}>{11}</span>
-            )
-          }}/>
-          <Column title="主卖均价" dataIndex="sal_p_v" key="sal_p_v" width={195} align="center" render={(sum_buy_p) => {
-            return (
-              <span style={{color: color.green}}>{11}</span>
-            )
-          }}/>
-          <Column title="主买总额" dataIndex="sum_buy_p" key="sum_buy_p" width={195} align="center" render={(sum_buy_p) => {
-            return (
-              <span style={{color: color.red}}>{11}</span>
-            )
-          }}/>
-          <Column title="主买手数" dataIndex="sum_buy_v" key="sum_buy_v" width={195} align="center" render={(sum_buy_p) => {
-            return (
-              <span style={{color: color.red}}>{11}</span>
-            )
-          }}/>
-          <Column title="时间" dataIndex="date" key="date" width={195} align="center"/> */}
-        </template>
         {/* <EditForm
           currentRowData={this.state.currentRowData}
           wrappedComponentRef={formRef => this.formRef = formRef}
