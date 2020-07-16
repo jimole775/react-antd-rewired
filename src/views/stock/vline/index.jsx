@@ -44,9 +44,9 @@ class TableComponent extends Component {
     //     heavy_sal: heavy_sal // 大单卖出额
     columns: [
       {
-        title: '代码',
-        dataIndex: 'code',
-        key: 'code',
+        title: '股票',
+        dataIndex: 'name',
+        key: 'name',
         width: 100,
         fixed: true
       },
@@ -67,6 +67,36 @@ class TableComponent extends Component {
         width: 100,
         dataIndex: 'vend',
         key: 'vend'
+      },
+      {
+        title: '下潜深度',
+        dataIndex: 'deep_size',
+        key: 'deep_size',
+        render: (text) => <span> {(text * 100).toFixed(2)}%</span>
+      },
+      {
+        title: '开盘价',
+        dataIndex: 'open_p',
+        key: 'open_p',
+        render: (text) => <span> {(text / 1000).toFixed(2)} 元</span>
+      },
+      {
+        title: '收盘价',
+        dataIndex: 'close_p',
+        key: 'close_p',
+        render: (text) => <span> {(text / 1000).toFixed(2)} 元</span>
+      },
+      {
+        title: '顶部价',
+        dataIndex: 'high_p',
+        key: 'high_p',
+        render: (text) => <span> {(text / 1000).toFixed(2)} 元</span>
+      },
+      {
+        title: '底部价',
+        dataIndex: 'deep_p',
+        key: 'deep_p',
+        render: (text) => <span> {(text / 1000).toFixed(2)} 元</span>
       },
       {
         title: () => <span style={{color:color.red}}> 主买均价 </span>,
@@ -92,18 +122,6 @@ class TableComponent extends Component {
         key: 'sum_sal_p',
         render: (text) => <span style={{color:color.green}}> {this.boundMoneySize(text)} </span>,
       },
-      // {
-      //   title: () => <span style={{color:color.red}}> 主买手数 </span>,
-      //   dataIndex: 'sum_buy_v',
-      //   key: 'sum_buy_v',
-      //   render: (text) => <span style={{color:color.red}}> {text} </span>,
-      // },
-      // {
-      //   title: () => <span style={{color:color.green}}> 主卖手数 </span>,
-      //   dataIndex: 'sum_sal_v',
-      //   key: 'sum_sal_v',
-      //   render: (text) => <span style={{color:color.green}}> {text} </span>,
-      // },
       {
         title: () => <span style={{color:color.red}}> 大单主买额 </span>,
         dataIndex: 'heavy_buy',
@@ -127,8 +145,8 @@ class TableComponent extends Component {
     ],
     searchor: [
       {
-        title: '代码',
-        key: 'code',
+        title: '股票',
+        key: 'name',
         type: 'input',
         value: '',
         style: {},
@@ -184,7 +202,7 @@ class TableComponent extends Component {
     return (
       <TTable
         bordered
-        scroll={{ x: 'calc(700px + 60%)' }}
+        scroll={{ x: 'calc(700px + 90%)' }}
         rowKey={(record) => record.id}
         columns={this.state.columns}
         searchor={this.state.searchor}
