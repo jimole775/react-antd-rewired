@@ -126,9 +126,19 @@ const menuList = [
   },
   {
     title: "股票",
-    path: "/stock",
     icon: "table",
-    roles:["admin"]
+    path: "/stock",
+    roles:["admin"],
+    children: [
+      {
+        title: "vline",
+        path: "/stock/vline",
+      },
+      {
+        title: "shadowline",
+        path: "/stock/shadowline",
+      }
+    ]
   },
   {
     title: "Excel",

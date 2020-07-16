@@ -46,11 +46,13 @@ module.exports = {
   devServer: overrideDevServer((config) => {
     return {
       ...config,
-      '/api': {
-        target: 'http://localhost:9527',
-        secure: false,
-        changeOrigin: false,
-      },
+      proxy: {
+        '/api': {
+          target: 'http://localhost:9527',
+          secure: false,
+          changeOrigin: false,
+        },
+      }
     }
   })
 };

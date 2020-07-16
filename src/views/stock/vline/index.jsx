@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React, { Component } from 'react'
 import {
   Table,
   Tag,
@@ -10,11 +10,11 @@ import {
   Divider,
   message,
   Select
-} from "antd"
-import { getvline } from "@/api/stocks"
-import { tableList } from "@/api/table"
-import TTable from "@/components/TTable"
-// import EditForm from "./forms/editForm"
+} from 'antd'
+import { getvline } from '@/api/stocks'
+import TTable from '@/components/TTable'
+import { moneyFormat } from '@/utils'
+// import EditForm from './forms/editForm'
 const { Column } = Table
 const { Panel } = Collapse
 const color = {
@@ -24,16 +24,13 @@ const color = {
 class TableComponent extends Component {
   _isMounted = false // 这个变量是用来标志当前组件是否挂载
   state = {
-    list: [],
-    loading: false,
-    total: 0,
     fetchApi: getvline,
     listQuery: {
       pageNumber: 1,
       pageSize: 10,
-      title: "",
-      star: "",
-      status:"",
+      title: '',
+      star: '',
+      status:'',
     },
     //     heavies, // 买入总额
     //     timeRange: `${rangeCans[0].t} ~ ${rangeCans[rangeCans.length - 1].t}`, // 买入总额
@@ -47,65 +44,99 @@ class TableComponent extends Component {
     //     heavy_sal: heavy_sal // 大单卖出额
     columns: [
       {
-        title: '时间范围',
-        dataIndex: 'time_range',
-        key: 'time_range',
-        width: 30
+        title: '代码',
+        dataIndex: 'code',
+        key: 'code',
+        width: 100,
+        fixed: true
+      },
+      {
+        title: '日期',
+        dataIndex: 'date',
+        width: 120,
+        key: 'date'
+      },
+      {
+        title: '开始时间',
+        width: 100,
+        dataIndex: 'vstart',
+        key: 'vstart'
+      },
+      {
+        title: '结束时间',
+        width: 100,
+        dataIndex: 'vend',
+        key: 'vend'
       },
       {
         title: () => <span style={{color:color.red}}> 主买均价 </span>,
         dataIndex: 'buy_p_v',
         key: 'buy_p_v',
-        width: 30
+        render: (text) => <span style={{color:color.red}}> {text} 元 </span>,
       },
       {
         title: () => <span style={{color:color.green}}> 主卖均价 </span>,
         dataIndex: 'sal_p_v',
         key: 'sal_p_v',
-        width: 30
+        render: (text) => <span style={{color:color.green}}> {text} 元</span>,
       },
       {
         title: () => <span style={{color:color.red}}> 主买总额 </span>,
         dataIndex: 'sum_buy_p',
         key: 'sum_buy_p',
-        width: 30
+        render: (text) => <span style={{color:color.red}}> {this.boundMoneySize(text)} </span>,
       },
       {
-        title: () => <span style={{color:color.red}}> 主买手数 </span>,
-        dataIndex: 'sum_buy_v',
-        key: 'sum_buy_v',
-        width: 30
-      },
-      {
-        title: () => <span style={{color:color.red}}> 主卖总额 </span>,
+        title: () => <span style={{color:color.green}}> 主卖总额 </span>,
         dataIndex: 'sum_sal_p',
         key: 'sum_sal_p',
-        width: 30
+        render: (text) => <span style={{color:color.green}}> {this.boundMoneySize(text)} </span>,
       },
-      {
-        title: () => <span style={{color:color.red}}> 主卖手数 </span>,
-        dataIndex: 'sum_sal_v',
-        key: 'sum_sal_v',
-        width: 30
-      },
+      // {
+      //   title: () => <span style={{color:color.red}}> 主买手数 </span>,
+      //   dataIndex: 'sum_buy_v',
+      //   key: 'sum_buy_v',
+      //   render: (text) => <span style={{color:color.red}}> {text} </span>,
+      // },
+      // {
+      //   title: () => <span style={{color:color.green}}> 主卖手数 </span>,
+      //   dataIndex: 'sum_sal_v',
+      //   key: 'sum_sal_v',
+      //   render: (text) => <span style={{color:color.green}}> {text} </span>,
+      // },
       {
         title: () => <span style={{color:color.red}}> 大单主买额 </span>,
         dataIndex: 'heavy_buy',
         key: 'heavy_buy',
-        width: 30
+        render: (text) => <span style={{color:color.red}}> {this.boundMoneySize(text)} </span>,
       },
       {
-        title: () => <span style={{color:color.red}}> 大单主卖额 </span>,
+        title: () => <span style={{color:color.green}}> 大单主卖额 </span>,
         dataIndex: 'heavy_sal',
         key: 'heavy_sal',
-        width: 30
+        render: (text) => <span style={{color:color.green}}> {this.boundMoneySize(text)} </span>,
+      },
+      {
+        title: () => <span style={{color:color.red}}> 小单跟买 </span>,
+        render: (text, record) => <span style={{color:color.red}}> {this.boundMoneySize(record.sum_buy_p - record.heavy_buy)} </span>,
+      },
+      {
+        title: () => <span style={{color:color.green}}> 小单跟卖 </span>,
+        render: (text, record) => <span style={{color:color.green}}> {this.boundMoneySize(record.sum_sal_p - record.heavy_sal)} </span>,
       },
     ],
     searchor: [
       {
-        title: '标题',
-        key: 'title',
+        title: '代码',
+        key: 'code',
         type: 'input',
+        value: '',
+        style: {},
+      },
+      {
+        title: '日期',
+        key: 'date',
+        type: 'date',
         value: '',
         style: {},
       },
@@ -129,10 +160,10 @@ class TableComponent extends Component {
     editModalVisible: false,
     editModalLoading: false,
   }
-  componentDidMount() {
+  componentDidMount () {
     this._isMounted = true
   }
-  componentWillUnmount() {
+  componentWillUnmount () {
     this._isMounted = false
   }
   searchmonitor (key, val) {
@@ -146,17 +177,21 @@ class TableComponent extends Component {
       searchor: searchs
     })
   }
-  render() {
+  boundMoneySize (val) {
+    return `${Math.round(val/10000)} 万元`
+  }
+  render () {
     return (
       <TTable
         bordered
-        columns={this.state.columns}
+        scroll={{ x: 'calc(700px + 60%)' }}
         rowKey={(record) => record.id}
+        columns={this.state.columns}
         searchor={this.state.searchor}
         fetchApi={this.state.fetchApi}
         pagination={true}
       >
-        <template slot="SearchBar">
+        {/* <template slot="SearchBar">
           <Form.Item label="类型：">
             <Select
               allowClear
@@ -176,8 +211,7 @@ class TableComponent extends Component {
               <Select.Option value={3}>★★★</Select.Option>
             </Select>
           </Form.Item>
-        </template>
-        <br />
+        </template> */}
         {/* <EditForm
           currentRowData={this.state.currentRowData}
           wrappedComponentRef={formRef => this.formRef = formRef}

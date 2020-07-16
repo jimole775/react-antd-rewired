@@ -22,7 +22,8 @@ const Clipboard = Loadable({loader: () => import(/*webpackChunkName:'Clipboard'*
 const Error404 = Loadable({loader: () => import(/*webpackChunkName:'Error404'*/'@/views/error/404'),loading: Loading});
 const User = Loadable({loader: () => import(/*webpackChunkName:'User'*/'@/views/user'),loading: Loading});
 const Bug = Loadable({loader: () => import(/*webpackChunkName:'Bug'*/'@/views/bug'),loading: Loading});
-const Stock = Loadable({loader: () => import(/*webpackChunkName:'Bug'*/'@/views/stock'),loading: Loading});
+const Vline = Loadable({loader: () => import(/*webpackChunkName:'Bug'*/'@/views/stock/vline'),loading: Loading});
+// const Shadowline = Loadable({loader: () => import(/*webpackChunkName:'Bug'*/'@/views/stock/shadowline'),loading: Loading});
 
 export default [
   { path: "/dashboard", component: Dashboard, roles: ["admin","editor","guest"] },
@@ -46,6 +47,7 @@ export default [
   { path: "/clipboard", component: Clipboard, roles: ["admin","editor"] },
   { path: "/user", component: User, roles: ["admin"] },
   { path: "/bug", component: Bug, roles: ["admin"] },
-  { path: "/stock", component: Stock, roles: ["admin"] },
+  { path: "/stock/vline", component: Vline, roles: ["admin"] },
+  // { path: "/stock/shadowline", component: Shadowline, roles: ["admin"] },
   { path: "/error/404", component: Error404 },
 ];
