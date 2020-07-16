@@ -9,13 +9,15 @@ import {
   Pagination,
   Divider,
   message,
-  Select
+  Select,
+  DatePicker
 } from "antd"
 import { tableList, deleteItem, editItem } from "@/api/table"
 import { PropTypes } from "prop-types";
 // import EditForm from "./forms/editForm"
 // const { Column } = Table
 const { Panel } = Collapse
+const { RangePicker } = DatePicker
 
 export default class TableComponent extends Component {
   static propTypes = {
@@ -23,6 +25,7 @@ export default class TableComponent extends Component {
     searchor: PropTypes.array,
     columns: PropTypes.array,
     fetchApi: PropTypes.func,
+    scroll: PropTypes.object,
   }
 
   static defaultProps = {
@@ -30,6 +33,7 @@ export default class TableComponent extends Component {
     searchor: null,
     columns: null,
     fetchApi: () => {},
+    scroll: { x: 'calc(700px + 50%)' }
   }
 
   _isMounted = false // 这个变量是用来标志当前组件是否挂载
@@ -50,8 +54,8 @@ export default class TableComponent extends Component {
       this.setState({ loading: true })
       console.log(this.state.listQuery)
       const res = await this.props.fetchApi(this.state.listQuery)
-      const list = res.data.data.items
-      const total = res.data.data.total
+      const list = res.data.data
+      const total = res.data.total
       this.setState({ list, total, loading: false })
     }
     return Promise.resolve()
@@ -150,19 +154,25 @@ export default class TableComponent extends Component {
   //     editModalVisible: false,
   //   })
   // }
-  getSlots (children = []) {
-    const templates = children.filter((item) => {
-      return item.type === 'template'
-    })
+  getSlots ({ children = [] }) {
+    let templates = []
+    let SearchChildren = ''
+    let TableChildren = ''
+    if (children instanceof Array) {
+      templates = children.filter((item) => {
+        return item.type === 'template'
+      })
+    } else {
+      templates = [children]
+    }
 
     if (!templates || templates.length === 0) return ''
-
-    let SearchChildren = templates.filter((item) => {
-      return item.props.slot === 'SearchBar'
+    SearchChildren = templates.filter((item) => {
+      return item.props && item.props.slot === 'SearchBar'
     })
 
-    let TableChildren = templates.filter((item) => {
-      return item.props.slot === 'Columns'
+    TableChildren = templates.filter((item) => {
+      return item.props && item.props.slot === 'Columns'
     })
 
     SearchChildren = SearchChildren && SearchChildren.length ? SearchChildren[0].props.children : ''
@@ -171,6 +181,7 @@ export default class TableComponent extends Component {
   }
 
   searchfieldsmonitor (key, val) {
+    console.log(key, val)
     this.setState((state) => {
       return { listQuery: { ...state.listQuery, [key]: val } }
     })
@@ -190,22 +201,48 @@ export default class TableComponent extends Component {
       if (searchItem.type === 'select') {
         searchNodes.push('')
       }
+
+      if (searchItem.type === 'date') {
+        searchNodes.push(
+          <Form.Item label={searchItem.title} key={index}>
+            <DatePicker onChange={(date, dateString) => this.searchfieldsmonitor(searchItem.key, dateString)} />
+          </Form.Item>
+        )
+      }
+
+      if (searchItem.type === 'dateRange') {
+        searchNodes.push(
+          <Form.Item label={searchItem.title} key={index} style={{width: 100}}>
+            <RangePicker onChange={(date, dateString) => this.searchfieldsmonitor(searchItem.key, dateString)} />
+          </Form.Item>
+        )
+      }
     })
     return searchNodes
   }
-
+  searchEvent () {
+    this.setState((state) => ({
+      listQuery: {
+        ...state.listQuery,
+        pageNumber: 1
+      }
+    }), () => {
+      this.fetchData()
+    })
+  }
   render() {
-    const { SearchChildren, TableChildren } = this.getSlots(this.props.children)
+    const { SearchChildren, TableChildren } = this.getSlots(this.props)
     // todo 搜索栏vNode生成
     return (
       <div className="app-container">
-        {(SearchChildren || this.props.searchor) && <Collapse defaultActiveKey={["1"]}>
+        {(SearchChildren || this.props.searchor) &&
+        <Collapse defaultActiveKey={["1"]}>
           <Panel header="筛选" key="1">
             <Form layout="inline">
               {this.createSearchBar(this.props.searchor)}
               {SearchChildren}
               <Form.Item>
-                <Button type="primary" icon="search" onClick={() => this.fetchData.call(this)}>
+                <Button type="primary" icon="search" onClick={() => this.searchEvent.call(this)}>
                   搜索
                 </Button>
               </Form.Item>
@@ -215,6 +252,7 @@ export default class TableComponent extends Component {
         <br />
         <Table
           bordered
+          scroll={this.props.scroll}
           dataSource={this.state.list}
           loading={this.state.loading}
           rowKey={this.props.rowKey}
