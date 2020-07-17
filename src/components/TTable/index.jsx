@@ -12,7 +12,6 @@ import {
   Select,
   DatePicker
 } from "antd"
-import { tableList, deleteItem, editItem } from "@/api/table"
 import { PropTypes } from "prop-types";
 // import EditForm from "./forms/editForm"
 // const { Column } = Table
@@ -168,11 +167,11 @@ export default class TableComponent extends Component {
 
     if (!templates || templates.length === 0) return ''
     SearchChildren = templates.filter((item) => {
-      return item.props && item.props.slot === 'SearchBar'
+      return item.props && item.props.slot === 'searchor'
     })
 
     TableChildren = templates.filter((item) => {
-      return item.props && item.props.slot === 'Columns'
+      return item.props && item.props.slot === 'columns'
     })
 
     SearchChildren = SearchChildren && SearchChildren.length ? SearchChildren[0].props.children : ''
@@ -260,31 +259,10 @@ export default class TableComponent extends Component {
           pagination={false} /* 不使用table的原生分页 */
         >
           {TableChildren}
-          {/* <Column title="序号" dataIndex="id" key="id" width={200} align="center" sorter={(a, b) => a.id - b.id}/>
-          <Column title="标题" dataIndex="title" key="title" width={200} align="center"/>
-          <Column title="作者" dataIndex="author" key="author" width={100} align="center"/>
-          <Column title="阅读量" dataIndex="readings" key="readings" width={195} align="center"/>
-          <Column title="推荐指数" dataIndex="star" key="star" width={195} align="center"/>
-          <Column title="状态" dataIndex="status" key="status" width={195} align="center" render={(status) => {
-            let color =
-              status === "published" ? "green" : status === "deleted" ? "red" : "";
-            return (
-              <Tag color={color} key={status}>
-                {status}
-              </Tag>
-            );
-          }}/>
-          <Column title="时间" dataIndex="date" key="date" width={195} align="center"/>
-          <Column title="操作" key="action" width={195} align="center" render={(text, row) => (
-            <span>
-              <Button type="primary" shape="circle" icon="edit" title="编辑" onClick={this.handleEdit.bind(null,row)}/>
-              <Divider type="vertical" />
-              <Button type="primary" shape="circle" icon="delete" title="删除" onClick={this.handleDelete.bind(null,row)}/>
-            </span>
-          )}/> */}
         </Table>
         <br />
-        {this.props.pagination && <Pagination
+        {this.props.pagination &&
+        <Pagination
           total={this.state.total}
           pageSizeOptions={["10", "20", "40"]}
           showTotal={(total) => `共${total}条数据`}
@@ -294,14 +272,6 @@ export default class TableComponent extends Component {
           showSizeChanger
           showQuickJumper
         />}
-        {/* <EditForm
-          currentRowData={this.state.currentRowData}
-          wrappedComponentRef={formRef => this.formRef = formRef}
-          visible={this.state.editModalVisible}
-          confirmLoading={this.state.editModalLoading}
-          onCancel={this.handleCancel}
-          onOk={this.handleOk}
-        />   */}
       </div>
     );
   }
