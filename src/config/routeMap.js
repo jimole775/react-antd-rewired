@@ -23,6 +23,7 @@ const Error404 = Loadable({loader: () => import(/*webpackChunkName:'Error404'*/'
 const User = Loadable({loader: () => import(/*webpackChunkName:'User'*/'@/views/user'),loading: Loading});
 const Bug = Loadable({loader: () => import(/*webpackChunkName:'Bug'*/'@/views/bug'),loading: Loading});
 const Vline = Loadable({loader: () => import(/*webpackChunkName:'Bug'*/'@/views/stock/vline'),loading: Loading});
+const Deals = Loadable({loader: () => import(/*webpackChunkName:'Bug'*/'@/views/stock/deals'),loading: Loading});
 // const Shadowline = Loadable({loader: () => import(/*webpackChunkName:'Bug'*/'@/views/stock/shadowline'),loading: Loading});
 
 export default [
@@ -48,6 +49,7 @@ export default [
   { path: "/user", component: User, roles: ["admin"] },
   { path: "/bug", component: Bug, roles: ["admin"] },
   { path: "/stock/vline", component: Vline, roles: ["admin"] },
+  { path: "/stock/deals", component: Deals, roles: ["admin"] },
   // { path: "/stock/shadowline", component: Shadowline, roles: ["admin"] },
   { path: "/error/404", component: Error404 },
 ];

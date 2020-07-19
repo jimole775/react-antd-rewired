@@ -24,6 +24,7 @@ export default class TableComponent extends Component {
     searchor: PropTypes.array,
     columns: PropTypes.array,
     fetchApi: PropTypes.func,
+    update: PropTypes.func,
     scroll: PropTypes.object,
   }
 
@@ -32,7 +33,8 @@ export default class TableComponent extends Component {
     searchor: null,
     columns: null,
     fetchApi: () => {},
-    scroll: { x: 'calc(700px + 50%)' }
+    update: () => {},
+    scroll: {}
   }
 
   _isMounted = false // 这个变量是用来标志当前组件是否挂载
@@ -55,6 +57,7 @@ export default class TableComponent extends Component {
       const res = await this.props.fetchApi(this.state.listQuery)
       const list = res.data.data
       const total = res.data.total
+      this.props.update(res.data)
       this.setState({ list, total, loading: false })
     }
     return Promise.resolve()
@@ -62,6 +65,7 @@ export default class TableComponent extends Component {
 
   componentDidMount () {
     this._isMounted = true
+    this.updateSearchor()
     this.fetchData()
   }
 
@@ -70,18 +74,22 @@ export default class TableComponent extends Component {
     this.setState = () => false
   }
 
-  async componentDidUpdate (prevProps) {
+  componentDidUpdate (prevProps) {
     if (this.props.searchor && prevProps.searchor !== this.props.searchor) {
-      this.props.searchor.forEach((item, index) => {
-        this.setState((state) => {
-          const res = {}
-          if (item.value) {
-            res[item.key] = item.value
-          }
-          return { listQuery: { ...state.listQuery, ...res } }
-        })
-      })
+      this.updateSearchor()
     }
+  }
+
+  updateSearchor () {
+    this.props.searchor.forEach((item, index) => {
+      this.setState((state) => {
+        const res = {}
+        if (item.value) {
+          res[item.key] = item.value
+        }
+        return { listQuery: { ...state.listQuery, ...res } }
+      })
+    })
   }
 
   changePage = (pageNumber, pageSize) => {
@@ -192,7 +200,7 @@ export default class TableComponent extends Component {
       if (searchItem.type === 'input') {
         searchNodes.push(
           <Form.Item label={searchItem.title} key={index}>
-            <Input allowClear onChange={(e) => this.searchfieldsmonitor(searchItem.key, e.currentTarget.value)} />
+            <Input allowClear defaultValue={searchItem.value} onChange={(e) => this.searchfieldsmonitor(searchItem.key, e.currentTarget.value)} />
           </Form.Item>
         )
       }
@@ -204,7 +212,7 @@ export default class TableComponent extends Component {
       if (searchItem.type === 'date') {
         searchNodes.push(
           <Form.Item label={searchItem.title} key={index}>
-            <DatePicker onChange={(date, dateString) => this.searchfieldsmonitor(searchItem.key, dateString)} />
+            <DatePicker defaultValue={searchItem.value} onChange={(date, dateString) => this.searchfieldsmonitor(searchItem.key, dateString)} />
           </Form.Item>
         )
       }

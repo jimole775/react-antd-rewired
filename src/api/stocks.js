@@ -17,3 +17,11 @@ export function getvline(data) {
     data
   })
 }
+
+export function getDeals(data) {
+  return request({
+    url: '/api/deals',
+    method: 'post',
+    data
+  })
+}

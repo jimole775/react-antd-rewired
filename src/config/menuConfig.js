@@ -131,6 +131,10 @@ const menuList = [
     roles:["admin"],
     children: [
       {
+        title: "deals",
+        path: "/stock/deals",
+      },
+      {
         title: "vline",
         path: "/stock/vline",
       },
