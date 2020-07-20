@@ -164,6 +164,7 @@ export default class TableComponent extends Component {
   getSlots ({ children = [] }) {
     let templates = []
     let SearchChildren = ''
+    let SummaryChildren = ''
     let TableChildren = ''
     if (children instanceof Array) {
       templates = children.filter((item) => {
@@ -178,13 +179,18 @@ export default class TableComponent extends Component {
       return item.props && item.props.slot === 'searchor'
     })
 
+    SummaryChildren = templates.filter((item) => {
+      return item.props && item.props.slot === 'summary'
+    })
+
     TableChildren = templates.filter((item) => {
       return item.props && item.props.slot === 'columns'
     })
 
     SearchChildren = SearchChildren && SearchChildren.length ? SearchChildren[0].props.children : ''
+    SummaryChildren = SummaryChildren && SummaryChildren.length ? SummaryChildren[0].props.children : ''
     TableChildren = TableChildren && TableChildren.length ? TableChildren[0].props.children : ''
-    return { SearchChildren, TableChildren }
+    return { SearchChildren, SummaryChildren, TableChildren }
   }
 
   searchfieldsmonitor (key, val) {
@@ -238,7 +244,7 @@ export default class TableComponent extends Component {
     })
   }
   render() {
-    const { SearchChildren, TableChildren } = this.getSlots(this.props)
+    const { SearchChildren, SummaryChildren, TableChildren } = this.getSlots(this.props)
     // todo 搜索栏vNode生成
     return (
       <div className="app-container">
@@ -257,6 +263,9 @@ export default class TableComponent extends Component {
           </Panel>
         </Collapse>}
         <br />
+        {
+          SummaryChildren
+        }
         <Table
           bordered
           scroll={this.props.scroll}

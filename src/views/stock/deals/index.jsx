@@ -1,16 +1,4 @@
 import React, { Component } from 'react'
-import {
-  Table,
-  Tag,
-  Form,
-  Button,
-  Input,
-  Collapse,
-  Pagination,
-  Divider,
-  message,
-  Select
-} from 'antd'
 import { getDeals } from '@/api/stocks'
 import TTable from '@/components/TTable'
 import columns from './columns'
@@ -20,9 +8,13 @@ const color = {
   red: '#ff5858',
   green: '#00c900',
 }
+function boundMoneySize (val) {
+  return `${Math.round(val/10000)} 万元`
+}
 class DealsComponent extends Component {
   state = {
     fetchApi: getDeals,
+    dataSet: {},
     listQuery: {
       pageNumber: 1,
       pageSize: 10,
@@ -77,12 +69,13 @@ class DealsComponent extends Component {
       searchor: searchs
     })
   }
-  tableUpdate (newData) {
+  tableUpdate = (newData) => {
     console.log(newData)
+    this.setState({ dataSet: newData })
   }
   render () {
     return (
-      <div>12312313
+      <>
         <TTable
           bordered
           rowKey={(record) => record.id}
@@ -92,29 +85,17 @@ class DealsComponent extends Component {
           update={this.tableUpdate}
           pagination={true}
         >
-          {/* <template slot="searchor">
-            <Form.Item label="类型：">
-              <Select
-                allowClear
-                labelInValue
-                defaultValue={this.male}
-                style={{ width: 120 }}
-                onChange={(val) => this.searchmonitor('status', val)}>
-                <Select.Option value="published">published</Select.Option>
-                <Select.Option value="draft">draft</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item label="推荐指数:">
-              <Select
-                allowClear
-                style={{ width: 120 }}
-                onChange={(val) => this.searchmonitor('star', val)}>
-                <Select.Option value={1}>★</Select.Option>
-                <Select.Option value={2}>★★</Select.Option>
-                <Select.Option value={3}>★★★</Select.Option>
-              </Select>
-            </Form.Item>
-          </template> */}
+          <template slot="summary">
+            <div>
+              <span>大单买入：{boundMoneySize(this.state.dataSet.bigDealIn)}</span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <span>大单卖出：{boundMoneySize(this.state.dataSet.bigDealOut)}</span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <span>小单买入：{boundMoneySize(this.state.dataSet.tinyDealIn)}</span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <span>小单卖出：{boundMoneySize(this.state.dataSet.tinyDealOut)}</span>
+            </div>
+          </template>
           {/* <EditForm
             currentRowData={this.state.currentRowData}
             wrappedComponentRef={formRef => this.formRef = formRef}
@@ -124,7 +105,7 @@ class DealsComponent extends Component {
             onOk={this.handleOk}
           />   */}
         </TTable>
-      </div>
+      </>
     );
   }
 }
