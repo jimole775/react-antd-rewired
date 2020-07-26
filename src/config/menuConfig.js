@@ -139,6 +139,10 @@ const menuList = [
         path: "/stock/vline",
       },
       {
+        title: "uline",
+        path: "/stock/uline",
+      },
+      {
         title: "shadowline",
         path: "/stock/shadowline",
       }
