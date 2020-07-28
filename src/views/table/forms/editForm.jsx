@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import { Form, Input, DatePicker, Select, Rate, Modal } from "antd";
-import moment from "moment";
-import "moment/locale/zh-cn";
-moment.locale("zh-cn");
+import React, { Component } from 'react'
+import { Form, Input, DatePicker, Select, Rate, Modal } from 'antd'
+import moment from 'moment'
+import 'moment/locale/zh-cn'
+moment.locale('zh-cn')
 class EditForm extends Component {
   render() {
     const {
@@ -12,9 +12,9 @@ class EditForm extends Component {
       form,
       confirmLoading,
       currentRowData,
-    } = this.props;
-    const { getFieldDecorator } = form;
-    const { id, author, date, readings, star, status, title } = currentRowData;
+    } = this.props
+    const { getFieldDecorator } = form
+    const { id, author, date, readings, star, status, title } = currentRowData
     const formItemLayout = {
       labelCol: {
         sm: { span: 4 },
@@ -22,7 +22,7 @@ class EditForm extends Component {
       wrapperCol: {
         sm: { span: 16 },
       },
-    };
+    }
     return (
       <Modal
         title="编辑"
@@ -33,33 +33,33 @@ class EditForm extends Component {
       >
         <Form {...formItemLayout}>
           <Form.Item label="序号:">
-            {getFieldDecorator("id", {
+            {getFieldDecorator('id', {
               initialValue: id,
             })(<Input disabled />)}
           </Form.Item>
           <Form.Item label="标题:">
-            {getFieldDecorator("title", {
-              rules: [{ required: true, message: "请输入标题!" }],
+            {getFieldDecorator('title', {
+              rules: [{ required: true, message: '请输入标题!' }],
               initialValue: title,
             })(<Input placeholder="标题" />)}
           </Form.Item>
           <Form.Item label="作者:">
-            {getFieldDecorator("author", {
+            {getFieldDecorator('author', {
               initialValue: author,
             })(<Input disabled />)}
           </Form.Item>
           <Form.Item label="阅读量:">
-            {getFieldDecorator("readings", {
+            {getFieldDecorator('readings', {
               initialValue: readings,
             })(<Input disabled />)}
           </Form.Item>
           <Form.Item label="推荐指数:">
-            {getFieldDecorator("star", {
+            {getFieldDecorator('star', {
               initialValue: star.length,
             })(<Rate count={3} />)}
           </Form.Item>
           <Form.Item label="状态:">
-            {getFieldDecorator("status", {
+            {getFieldDecorator('status', {
               initialValue: status,
             })(
               <Select style={{ width: 120 }}>
@@ -69,14 +69,14 @@ class EditForm extends Component {
             )}
           </Form.Item>
           <Form.Item label="时间:">
-            {getFieldDecorator("date", {
+            {getFieldDecorator('date', {
               rules: [{ type: 'object', required: true, message: '请选择时间!' }],
-              initialValue: moment(date || "YYYY-MM-DD HH:mm:ss"),
+              initialValue: moment(date || 'YYYY-MM-DD HH:mm:ss'),
             })(<DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />)}
           </Form.Item>
         </Form>
       </Modal>
-    );
+    )
   }
 }
 

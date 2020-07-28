@@ -11,7 +11,7 @@ import {
   message,
   Select
 } from 'antd'
-import { getvline } from '@/api/stocks'
+import { getVline } from '@/api/stocks'
 import TTable from '@/components/TTable'
 import columns from './columns'
 // import EditForm from './forms/editForm'
@@ -21,7 +21,7 @@ const color = {
 }
 class VlineComponent extends Component {
   state = {
-    fetchApi: getvline,
+    fetchApi: getVline,
     listQuery: {
       pageNumber: 1,
       pageSize: 10,

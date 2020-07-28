@@ -10,9 +10,17 @@ import request from '@/utils/request'
 //     sum_sal_v: sum_sal_v, // 卖出手数
 //     heavy_buy: heavy_buy, // 大单买入额
 //     heavy_sal: heavy_sal // 大单卖出额
-export function getvline(data) {
+export function getVline(data) {
   return request({
     url: '/api/vline',
+    method: 'post',
+    data
+  })
+}
+
+export function getUline(data) {
+  return request({
+    url: '/api/uline',
     method: 'post',
     data
   })

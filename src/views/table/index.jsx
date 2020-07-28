@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react'
 import {
   Table,
   Tag,
@@ -10,9 +10,9 @@ import {
   Divider,
   message,
   Select
-} from "antd"
-import { tableList, deleteItem,editItem } from "@/api/table"
-import EditForm from "./forms/editForm"
+} from 'antd'
+import { tableList, deleteItem, editItem } from '@/api/table'
+import EditForm from './forms/editForm'
 const { Column } = Table
 const { Panel } = Collapse
 class TableComponent extends Component {
@@ -24,20 +24,20 @@ class TableComponent extends Component {
     listQuery: {
       pageNumber: 1,
       pageSize: 10,
-      title: "",
-      star: "",
-      status:""
+      title: '',
+      star: '',
+      status:''
     },
     editModalVisible: false,
     editModalLoading: false,
     currentRowData: {
       id: 0,
-      author: "",
-      date: "",
+      author: '',
+      date: '',
       readings: 0,
-      star: "★",
-      status: "published",
-      title: ""
+      star: '★',
+      status: 'published',
+      title: ''
     }
   }
   fetchData = () => {
@@ -123,7 +123,7 @@ class TableComponent extends Component {
     })
   }
   handleOk = _ => {
-    const { form } = this.formRef.props;
+    const { form } = this.formRef.props
     form.validateFields((err, fieldsValue) => {
       if (err) {
         return
@@ -197,13 +197,12 @@ class TableComponent extends Component {
           <Column title="阅读量" dataIndex="readings" key="readings" width={195} align="center"/>
           <Column title="推荐指数" dataIndex="star" key="star" width={195} align="center"/>
           <Column title="状态" dataIndex="status" key="status" width={195} align="center" render={(status) => {
-            let color =
-              status === "published" ? "green" : status === "deleted" ? "red" : "";
+            let color = status === "published" ? "green" : status === "deleted" ? "red" : ""
             return (
               <Tag color={color} key={status}>
                 {status}
               </Tag>
-            );
+            )
           }}/>
           <Column title="时间" dataIndex="date" key="date" width={195} align="center"/>
           <Column title="操作" key="action" width={195} align="center"render={(text, row) => (
