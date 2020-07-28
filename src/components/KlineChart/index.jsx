@@ -89,7 +89,9 @@ const option = {
 }
 
 const KlineChart = (props) => {
-  
+  React.useEffect((a, b, c)=>{
+    console.log(a, b, c)
+  })
   return (
     <ReactEcharts option={option}></ReactEcharts>
   )

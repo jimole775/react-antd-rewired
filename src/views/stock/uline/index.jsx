@@ -15,19 +15,35 @@ class UlineComponent extends Component {
       pageNumber: 1,
       pageSize: 10,
     },
+    columns: [
+      {
+        title: '代码',
+        dataIndex: 'code',
+        width: 120,
+        key: 'code'
+      },
+      {
+        title: '股票',
+        dataIndex: 'name',
+        key: 'name',
+        width: 100
+      },
+      {
+        title: '时间范围',
+        dataIndex: 'dateRange',
+        key: 'dateRange',
+        render: (text, record) => {
+          const str = record.klines.map((kline) => {return kline.split(',')[0]})
+          return <span>{`${str[0]} ~ ${str[str.length - 1]}`}</span>
+        }
+      }
+    ],
     searchor: [
       {
         title: '代码',
         key: 'code',
         type: 'input',
-        value: '000001',
-        style: {},
-      },
-      {
-        title: '日期',
-        key: 'date',
-        type: 'date',
-        value: moment(new Date()),
+        value: '',
         style: {},
       }
     ],
@@ -50,9 +66,6 @@ class UlineComponent extends Component {
     console.log(newData)
     this.setState({ dataSet: newData })
   }
-  tableChange = (record) => {
-    this.setState({ record })
-  }
   render () {
     return (
       <>
@@ -61,9 +74,17 @@ class UlineComponent extends Component {
           bordered
           rowKey={(record) => record.id}
           fetchApi={getUline}
+          columns={this.state.columns}
           searchor={this.state.searchor}
           update={this.tableUpdate}
           pagination={true}
+          onRow={
+            record => {
+              return {
+                onClick: () => this.setState({ record })
+              }
+            }
+          }
         >
           {/* <template slot="summary">
             <div>

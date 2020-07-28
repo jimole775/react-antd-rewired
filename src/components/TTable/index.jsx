@@ -26,6 +26,7 @@ export default class TableComponent extends Component {
     fetchApi: PropTypes.func,
     update: PropTypes.func,
     scroll: PropTypes.object,
+    onRow: PropTypes.func
   }
 
   static defaultProps = {
@@ -34,7 +35,8 @@ export default class TableComponent extends Component {
     columns: null,
     fetchApi: () => {},
     update: () => {},
-    scroll: {}
+    onRow: () => {},
+    scroll: {},
   }
 
   _isMounted = false // 这个变量是用来标志当前组件是否挂载
@@ -273,6 +275,7 @@ export default class TableComponent extends Component {
           loading={this.state.loading}
           rowKey={this.props.rowKey}
           columns={this.props.columns}
+          onRow={this.props.onRow}
           pagination={false} /* 不使用table的原生分页 */
         >
           {TableChildren}
