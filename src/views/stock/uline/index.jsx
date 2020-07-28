@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { getDeals } from '@/api/stocks'
+import { getUline } from '@/api/stocks'
 import TTable from '@/components/TTable'
 import KlineChart from '@/components/KlineChart'
 import moment from 'moment'
@@ -7,9 +7,9 @@ import moment from 'moment'
 function boundMoneySize (val) {
   return `${Math.round(val/10000)} 万元`
 }
-class DealsComponent extends Component {
+class UlineComponent extends Component {
   state = {
-    fetchApi: getDeals,
+    record: {},
     dataSet: {},
     listQuery: {
       pageNumber: 1,
@@ -22,7 +22,6 @@ class DealsComponent extends Component {
         type: 'input',
         value: '000001',
         style: {},
-        required: true,
       },
       {
         title: '日期',
@@ -30,24 +29,7 @@ class DealsComponent extends Component {
         type: 'date',
         value: moment(new Date()),
         style: {},
-        required: true,
-      },
-      {
-        title: '额度',
-        key: 'gradient',
-        type: 'input',
-        value: '',
-        style: {},
-        required: true,
-      },
-      {
-        title: '类型',
-        key: 'type',
-        type: 'input',
-        value: '',
-        style: {},
-        required: true,
-      },
+      }
     ],
     editModalVisible: false,
     editModalLoading: false,
@@ -68,19 +50,22 @@ class DealsComponent extends Component {
     console.log(newData)
     this.setState({ dataSet: newData })
   }
+  tableChange = (record) => {
+    this.setState({ record })
+  }
   render () {
     return (
       <>
-        <KlineChart test="test111"></KlineChart>
+        <KlineChart test="test111" data={this.state.record}></KlineChart>
         <TTable
           bordered
           rowKey={(record) => record.id}
+          fetchApi={getUline}
           searchor={this.state.searchor}
-          fetchApi={this.state.fetchApi}
           update={this.tableUpdate}
           pagination={true}
         >
-          <template slot="summary">
+          {/* <template slot="summary">
             <div>
               <span>大单买入：{boundMoneySize(this.state.dataSet.bigDealIn)}</span>
               &nbsp;&nbsp;&nbsp;&nbsp;
@@ -90,7 +75,7 @@ class DealsComponent extends Component {
               &nbsp;&nbsp;&nbsp;&nbsp;
               <span>小单卖出：{boundMoneySize(this.state.dataSet.tinyDealOut)}</span>
             </div>
-          </template>
+          </template> */}
           {/* <EditForm
             currentRowData={this.state.currentRowData}
             wrappedComponentRef={formRef => this.formRef = formRef}
@@ -105,4 +90,4 @@ class DealsComponent extends Component {
   }
 }
 
-export default DealsComponent
+export default UlineComponent
