@@ -63,13 +63,12 @@ class UlineComponent extends Component {
     })
   }
   tableUpdate = (newData) => {
-    console.log(newData)
-    this.setState({ dataSet: newData })
+    // this.setState({ record: newData })
   }
   render () {
     return (
       <>
-        <KlineChart test="test111" data={this.state.record}></KlineChart>
+        <KlineChart data={this.state.record}></KlineChart>
         <TTable
           bordered
           rowKey={(record) => record.id}
