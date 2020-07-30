@@ -14,16 +14,6 @@ const option = {
     axisPointer: {  // 坐标轴指示器，坐标轴触发有效
       type: 'line'  // 默认为直线，可选为：'line' | 'shadow'
     },
-    //   formatter: function (params) {
-    //     var tar
-    //     if (params[1].value !== '-') {
-    //       tar = params[1]
-    //     }
-    //     else {
-    //       tar = params[0]
-    //     }
-    //     return tar.name + '<br/>' + tar.seriesName + ' : ' + tar.value
-    //   }
   },
   legend: {
     data: ['涨', '跌']
@@ -37,6 +27,7 @@ const option = {
   xAxis: {
     type: 'category',
     splitLine: { show: false },
+    splitNumber: 3,
     data: []
   },
   yAxis: {
@@ -49,7 +40,7 @@ const option = {
   },
   series: [
     {
-      name: '开盘价',
+      name: '收盘价',
       type: 'bar',
       stack: '总量',
       itemStyle: {
@@ -72,7 +63,19 @@ const option = {
         show: true,
         position: 'top'
       },
-      data: []
+      itemStyle: {
+        color: '#f73333'
+      },
+      barWidth: 20,
+      data: [],
+      label: {
+        normal: {
+          show: true,
+          formatter: (a) => {
+            return (Number.parseFloat(a.value) / Number.parseFloat(a.data.openvalue) * 100).toFixed(2) + '%'
+          }
+        }
+      }
     },
     {
       name: '跌',
@@ -82,7 +85,19 @@ const option = {
         show: true,
         position: 'bottom'
       },
-      data: []
+      barWidth: 20,
+      itemStyle: {
+        color: '#0fb300'
+      },
+      data: [],
+      label: {
+        normal: {
+          show: true,
+          formatter: (a) => {
+            return (Number.parseFloat(a.value) / Number.parseFloat(a.data.openvalue) * 100).toFixed(2) + '%'
+          }
+        }
+      }
     }
   ]
 }
@@ -105,24 +120,31 @@ const KlineChart = (props) => {
     const rise = []
     const down = []
     const dates = []
-    klines && klines.forEach((daily) => {
-      const [date, open, close, high, low] = daily.split(',')
-      dates.push(date)
+    klines && klines.forEach((daily, index) => {
+      // 当 index 为 0 时，就默认当天为前一天，这样可以避免逻辑复杂化
+      let prevDaily = klines[index - 1] ? klines[index - 1] : daily
+      let [prev_date, prev_open, prev_close, _high, _low] = prevDaily.split(',')
+      let [date, open, close, high, low] = daily.split(',')
 
-      // 涨跌需要根据前一日的收盘价和当日的开盘价做对比才能得出
-      // 因为有时候开盘价是跌停开盘，一直跌到收盘，那么涨跌只有0
-      const diff = Number.parseFloat(close) - Number.parseFloat(open)
+      // 如果日期相同，就把 “当天的开盘价” 当作 “昨天的收盘价”
+      if (date === prev_date) prev_close = open
 
+      // 当日价差 = 当天的收盘价 - 前一天的收盘价
+      let diff = Number.parseFloat(close) - Number.parseFloat(prev_close)
       if (diff < 0) {
         // 处理跌幅
         rise.push('-')
-        down.push(Math.abs(diff).toFixed(2))
+        down.push({ openvalue: open, value: Math.abs(diff).toFixed(2) })
+        // 砥柱高度为：前一天的收盘价 + 当天的差价
+        assiants.push(Number.parseFloat(prev_close) + Number.parseFloat(diff))
       } else {
         // 处理涨幅
-        rise.push(diff.toFixed(2))
+        rise.push({ openvalue: open, value: diff.toFixed(2) })
         down.push('-')
+        // 砥柱高度为：当天的开盘价
+        assiants.push(open)
       }
-      assiants.push(open)
+      dates.push(date)
     })
     
     // 跳空高度
