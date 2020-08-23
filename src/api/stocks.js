@@ -33,3 +33,19 @@ export function getDeals(data) {
     data
   })
 }
+
+export function getLowerpoint(data) {
+  return request({
+    url: '/api/lowerpoint',
+    method: 'post',
+    data
+  })
+}
+
+export function getDealLine(data) {
+  return request({
+    url: '/api/dealline',
+    method: 'post',
+    data
+  })
+}

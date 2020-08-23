@@ -143,6 +143,10 @@ const menuList = [
         path: "/stock/uline",
       },
       {
+        title: "lowerpoint",
+        path: "/stock/lowerpoint",
+      },
+      {
         title: "shadowline",
         path: "/stock/shadowline",
       }

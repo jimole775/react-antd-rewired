@@ -55,11 +55,10 @@ export default class TableComponent extends Component {
   async fetchData () {
     if (this._isMounted && this.state.loading === false) {
       this.setState({ loading: true })
-      console.log(this.state.listQuery)
       const res = await this.props.fetchApi(this.state.listQuery)
       const list = res.data.data
       const total = res.data.total
-      this.props.update(res.data)
+      this.props.update(res.data, this.state)
       this.setState({ list, total, loading: false })
     }
     return Promise.resolve()
@@ -196,7 +195,6 @@ export default class TableComponent extends Component {
   }
 
   searchfieldsmonitor (key, val) {
-    console.log(key, val)
     this.setState((state) => {
       return { listQuery: { ...state.listQuery, [key]: val } }
     })
@@ -293,6 +291,6 @@ export default class TableComponent extends Component {
           showQuickJumper
         />}
       </div>
-    );
+    )
   }
 }
