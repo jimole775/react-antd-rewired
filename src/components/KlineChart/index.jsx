@@ -5,11 +5,13 @@ import { PropTypes } from "prop-types"
 
 class KlineChart extends Component {
   static propTypes = {
-    data: PropTypes.object
+    data: PropTypes.object,
+    stock: PropTypes.string
   }
 
   static defaultProps = {
-    data: {}
+    data: {},
+    stock: '000001'
   }
   constructor (prop) {
     super(prop)

@@ -1,7 +1,7 @@
 import * as types from "../action-types";
 const initState = {
-  sidebarCollapsed: false,
-  settingPanelVisible: false,
+  sidebarCollapsed: true,
+  settingPanelVisible: true,
 };
 export default function app(state = initState, action) {
   switch (action.type) {

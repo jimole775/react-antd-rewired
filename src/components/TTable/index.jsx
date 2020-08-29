@@ -248,20 +248,21 @@ export default class TableComponent extends Component {
     // todo 搜索栏vNode生成
     return (
       <div className="app-container">
-        {(SearchChildren || this.props.searchor) &&
-        <Collapse defaultActiveKey={["1"]}>
-          <Panel header="筛选" key="1">
-            <Form layout="inline">
-              {this.createSearchBar(this.props.searchor)}
-              {SearchChildren}
-              <Form.Item>
-                <Button type="primary" icon="search" onClick={() => this.searchEvent.call(this)}>
-                  搜索
-                </Button>
-              </Form.Item>
-            </Form>
+        {/*{(SearchChildren || this.props.searchor) &&
+          // <Collapse defaultActiveKey={["1"]}>
+         <Panel header="筛选" key="1"> 
+            
           </Panel>
-        </Collapse>}
+        </Collapse>}*/}
+        <Form layout="inline">
+          {this.createSearchBar(this.props.searchor)}
+          {SearchChildren}
+          <Form.Item>
+            <Button type="primary" icon="search" onClick={() => this.searchEvent.call(this)}>
+              搜索
+            </Button>
+          </Form.Item>
+        </Form>
         <br />
         {
           SummaryChildren

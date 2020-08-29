@@ -12,7 +12,7 @@ const Main = (props) => {
     <Layout style={{ minHeight: "100vh" }}>
       <Sider />
       <Layout>
-        <Header />
+        {/* <Header /> */}
         {tagsView ? <TagsView /> : null}
         <Content />
         <RightPanel />
