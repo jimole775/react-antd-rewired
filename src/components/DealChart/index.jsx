@@ -4,7 +4,7 @@ import { getDealLine } from '@/api/stocks'
 import ReactEcharts from 'echarts-for-react'
 import { PropTypes } from "prop-types"
 
-class KlineChart extends Component {
+class DealChart extends Component {
   static propTypes = {
     data: PropTypes.object,
     date: PropTypes.string,
@@ -172,4 +172,4 @@ class KlineChart extends Component {
   }
 }
 
-export default KlineChart
+export default DealChart

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 // import { connect } from "react-redux"
 import ReactEcharts from 'echarts-for-react'
 import { PropTypes } from "prop-types"
-
+import request from '@/utils/request'
 class KlineChart extends Component {
   static propTypes = {
     data: PropTypes.object,
@@ -109,7 +109,18 @@ class KlineChart extends Component {
     // this.echartsReact.getEchartsInstance().setOption(getOption())
   }
   componentDidMount () {
+    
+  }
+  componentDidUpdate () {
+    if (this.state.stock) {
+      this.fetchData()
+    } else {
 
+    }
+  }
+
+  async fetchData () {
+    await request()
   }
 
   getOption () {

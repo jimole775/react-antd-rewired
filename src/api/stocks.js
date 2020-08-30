@@ -49,3 +49,11 @@ export function getDealLine(data) {
     data
   })
 }
+
+export function getKline(data) {
+  return request({
+    url: '/api/kline',
+    method: 'post',
+    data
+  })
+}

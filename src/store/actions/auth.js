@@ -7,7 +7,6 @@ export const login = (username, password) => (dispatch) => {
       .then((response) => {
         const { data } = response;
         if (data.status === 0) {
-          debugger
           const token = data.token;
           dispatch(setUserToken(token));
           setToken(token);
