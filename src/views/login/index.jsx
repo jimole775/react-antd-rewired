@@ -114,14 +114,13 @@ const Login = (props) => {
               </Form.Item> */}
             </Spin>
           </Form>
-        </div>          
+        </div>
       </div>
     </DocumentTitle>
   );
 };
 
 const WrapLogin = Form.create()(Login);
-
 export default connect((state) => state.user, { login, getUserInfo })(
   WrapLogin
 );

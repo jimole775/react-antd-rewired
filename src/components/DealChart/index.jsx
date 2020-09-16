@@ -1,26 +1,30 @@
 import React, { Component } from 'react'
-// import { connect } from "react-redux"
-import { getDealLine } from '@/api/stocks'
+import { connect } from "react-redux"
+import { getDealline } from '@/api/stocks'
+import { loadDealline } from '@/store/actions'
+import store from '@/store'
 import ReactEcharts from 'echarts-for-react'
 import { PropTypes } from "prop-types"
 
 class DealChart extends Component {
-  static propTypes = {
-    data: PropTypes.object,
-    date: PropTypes.string,
-    stock: PropTypes.string
-  }
+  // static propTypes = {
+  //   date: PropTypes.string,
+  //   stock: PropTypes.string
+  // }
 
-  static defaultProps = {
-    data: {}, // 截取小段数据
-    date: '', // 如果有 date 和 stock ，那么就触发内部request  
-    stock: ''
-  }
+  // static defaultProps = {
+  //   date: '', // 如果有 date 和 stock ，那么就触发内部request  
+  //   stock: ''
+  // }
 
-  constructor (prop) {
-    super(prop)
+  constructor (props) {
+    super(props)
     this.echartsReact = null
     this.open_price = 0
+    store.subscribe(() => {
+      console.log('state状态改变了，新状态如下')
+    })
+
     this.option = {
       legend: {
         data: ['涨', '跌']
@@ -66,7 +70,7 @@ class DealChart extends Component {
     let data = null
     let blanceline = 0
     if (this.props.date && this.props.stock) {
-      const res = await getDealLine({ date: this.props.date, stock: this.props.stock })
+      const res = await getDealline({ date: this.props.date, stock: this.props.stock })
       if (res.data.data) {
         data = res.data.data
         blanceline = res.data.open_p
@@ -76,12 +80,13 @@ class DealChart extends Component {
   }
 
   async componentDidUpdate () {
+    console.log('componentDidUpdate:', this.props)
     const [data, blanceline] = await this.fetchData()
     let deals = []
     if (data) {
       deals = data
     } else {
-      deals = this.props.data.data
+      // deals = this.props.data.data
     }
     this.echartsReact.getEchartsInstance().setOption(this.getOption(deals, blanceline))
   }
@@ -164,12 +169,16 @@ class DealChart extends Component {
     return this.option
   }
   render () {
-    return <ReactEcharts
-      option={this.getOption()}
-      // 获取ReactEcharts的引用
-      ref={(e) => { this.echartsReact = e }} 
-    ></ReactEcharts>
+    return <div>
+      <span>{this.props.date}</span>
+      <span>{this.props.stock}</span>
+      <span>{1234}</span>
+      <ReactEcharts
+        option={this.getOption()}
+        // 获取ReactEcharts的引用
+        ref={(e) => { this.echartsReact = e }} 
+      />
+    </div>
   }
 }
-
-export default DealChart
+export default connect(state => state.stocks.deal)(DealChart)

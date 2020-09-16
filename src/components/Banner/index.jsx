@@ -33,7 +33,6 @@ export default class Banner extends Component {
     this.interval = null;
     this.gather = true;
     this.intervalTime = 9000;
-    console.log(this.props)
   }
 
   componentDidMount() {

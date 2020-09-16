@@ -18,4 +18,8 @@ export const TAGSVIEW_CLOSE_OTHER_TAGS = "TAGSVIEW_CLOSE_OTHER_TAGS";
 // monitor
 export const BUG_ADD_BUG = "BUG_ADD_BUG";
 
+// stock
+export const STOCK_KLINE = "STOCK_KLINE";
+export const STOCK_DEALLINE = "STOCK_DEALLINE";
+
 

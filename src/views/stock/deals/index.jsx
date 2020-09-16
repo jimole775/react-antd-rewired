@@ -104,7 +104,7 @@ class DealsComponent extends Component {
             onOk={this.handleOk}
           />   */}
         </TTable>
-        <Modal
+        {/* <Modal
           visible={modalShow}
           footer={null}
           onCancel={
@@ -116,7 +116,7 @@ class DealsComponent extends Component {
             date={queryDate_string}
             stock={queryStock}
           />
-        </Modal>
+        </Modal> */}
       </>
     );
   }

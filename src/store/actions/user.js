@@ -19,7 +19,7 @@ export const getUserInfo = (token) => (dispatch) => {
         reject(error);
       });
   });
-};
+}
 
 export const setUserToken = (token) => {
   return {

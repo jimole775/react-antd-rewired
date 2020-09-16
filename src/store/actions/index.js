@@ -4,6 +4,7 @@ import { toggleSiderBar, toggleSettingPanel } from "./app";
 import { changeSetting } from "./settings";
 import { addTag, emptyTaglist, deleteTag, closeOtherTags } from "./tagsView";
 import { addBug } from "./monitor";
+import { loadKline, loadDealline, updateKline, updateDeal } from "./stocks";
 
 export {
   login,
@@ -19,5 +20,9 @@ export {
   emptyTaglist,
   deleteTag,
   closeOtherTags,
+  loadKline,
+  loadDealline,
+  updateKline,
+  updateDeal,
   addBug
 };

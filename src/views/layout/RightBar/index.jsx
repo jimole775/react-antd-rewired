@@ -3,28 +3,31 @@ import React, { Component } from 'react'
 // import { Link, withRouter } from 'react-router-dom'
 // import { Scrollbars } from 'react-custom-scrollbars'
 import { PropTypes } from "prop-types"
-// import { connect } from 'react-redux'
+import { connect } from 'react-redux'
 // import { addTag } from '@/store/actions'
 import './index.less'
 // const SubMenu = Menu.SubMenu
 import KlineChart from '@/components/KlineChart'
 import DealChart from '@/components/DealChart'
+import { updateDeal } from '@/store/actions'
 class RightBar extends Component {
-  static propTypes = {
-    date: PropTypes.string,
-    stock: PropTypes.string
-  }
+  // static propTypes = {
+  //   date: PropTypes.string,
+  //   stock: PropTypes.string
+  // }
 
-  static defaultProps = {
-    date: new Date(),
-    stock: '000001'
-  }
-  state = {
-  }
+  // static defaultProps = {
+  //   date: new Date(),
+  //   stock: '000001'
+  // }
+  // state = {
+  // }
   constructor (props) {
     super(props)
+    
   }
   componentWillMount() {
+
   }
   componentWillReceiveProps() {
     
@@ -35,15 +38,11 @@ class RightBar extends Component {
         {/* <Scrollbars autoHide autoHideTimeout={1000} autoHideDuration={200}>
 
         </Scrollbars> */}
-        <DealChart
-          date={this.props.date}
-          stock={this.props.stock}
-        />
-        <KlineChart stock={this.props.stock} />
+        <DealChart />
+        <KlineChart />
       </div>
     )
   }
 }
 
-// export default connect((state) => state.user, { addTag })(withRouter(RightBar))
-export default RightBar
+export default connect((state) => state.stocks, { updateDeal })(RightBar)

@@ -13,8 +13,8 @@ class KlineChart extends Component {
     data: {},
     stock: '000001'
   }
-  constructor (prop) {
-    super(prop)
+  constructor (props) {
+    super(props)
     this.echartsReact = null
     this.option = {
       // title: {
@@ -112,11 +112,11 @@ class KlineChart extends Component {
     
   }
   componentDidUpdate () {
-    if (this.state.stock) {
-      this.fetchData()
-    } else {
+    // if (this.state.stock) {
+    //   this.fetchData()
+    // } else {
 
-    }
+    // }
   }
 
   async fetchData () {
