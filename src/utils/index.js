@@ -68,16 +68,14 @@ export function timestampToTime (timestamp) {
   return strDate
 }
 
-export function moneyFormat(money, digit) {
-  digit = digit > 0 && digit <= 20 ? digit : 2
-  money = parseFloat(money).toFixed(digit)
-  var integerArr = money.split('.')[0].split('').reverse()
-  var decimals = money.split('.')[1]
-  let tempArr = ''
-  for (var i=0,k=integerArr.length;i<k;i++) {
-          var cammaTag = (i+1)%3===0 && (i+1)!==k ? ',' : ''
-      tempArr += integerArr[i] + cammaTag
+export function decodeStockTime (t) {
+  if (t === null && t === undefined) {
+    t = ''
   }
-  money = tempArr.split('').reverse().join('') + '.' + decimals
-  return money
+  t = (t + '').trim() 
+  let s = t.substring(t.length - 2, t.length)
+  let m = t.substring(t.length - 4, t.length - 2)
+  let h = t.substring(t.length - 6, t.length - 4)
+  h = h.length === 1 ? '0' + h : h
+  return `${h}:${m}:${s}`
 }

@@ -56,7 +56,7 @@ export default class TableComponent extends Component {
     if (this._isMounted && this.state.loading === false) {
       this.setState({ loading: true })
       const res = await this.props.fetchApi(this.state.listQuery)
-      const list = res.data.data
+      const list = res.data.list
       const total = res.data.total
       this.props.update(res.data, this.state)
       this.setState({ list, total, loading: false })
@@ -218,7 +218,7 @@ export default class TableComponent extends Component {
       if (searchItem.type === 'date') {
         searchNodes.push(
           <Form.Item label={searchItem.title} key={index}>
-            <DatePicker defaultValue={searchItem.value} onChange={(date, dateString) => this.searchfieldsmonitor(searchItem.key, dateString)} />
+            <DatePicker defaultValue={searchItem.value ? searchItem.value : null} onChange={(date, dateString) => this.searchfieldsmonitor(searchItem.key, dateString)} />
           </Form.Item>
         )
       }

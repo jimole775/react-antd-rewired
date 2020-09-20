@@ -1,7 +1,6 @@
 import Mock from 'mockjs'
 const list = []
 const count = 20
-
 for (let i = 0; i < count; i++) {
   list.push(Mock.mock({
     key: '@increment',

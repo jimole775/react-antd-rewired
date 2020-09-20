@@ -18,9 +18,7 @@ const Main = (props) => {
         <Content />
         {/* <RightPanel /> */}
       </Layout>
-      <Layout>
-        <RightBar />
-      </Layout>
+      <RightBar />
     </Layout>
   );
 };

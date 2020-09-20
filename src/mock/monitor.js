@@ -1,8 +1,14 @@
+const model = {
+  code: 200,
+  data: {},
+  message: 'success'
+}
 export default {
   monitor: (config) => {
-    return {
+    model.data = {
       status: 1,
       message: "monitor",
-    };
+    }
+    return model
   }
 }

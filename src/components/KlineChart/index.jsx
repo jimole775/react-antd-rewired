@@ -1,137 +1,43 @@
 import React, { Component } from 'react'
-// import { connect } from "react-redux"
+import { connect } from 'react-redux'
 import ReactEcharts from 'echarts-for-react'
-import { PropTypes } from "prop-types"
-import request from '@/utils/request'
-class KlineChart extends Component {
-  static propTypes = {
-    data: PropTypes.object,
-    stock: PropTypes.string
-  }
+import { PropTypes } from 'prop-types'
+import { getKline } from '@/api/stocks'
+import { chartOption } from "./config"
 
-  static defaultProps = {
-    data: {},
-    stock: '000001'
-  }
+class KlineChart extends Component {
   constructor (props) {
     super(props)
     this.echartsReact = null
-    this.option = {
-      // title: {
-      //   text: '阶梯瀑布图',
-      //   subtext: 'From ExcelHome',
-      //   sublink: 'http://e.weibo.com/1341556070/Aj1J2x5a5'
-      // },
-      // tooltip: {
-      //   trigger: 'axis',
-      //   axisPointer: {  // 坐标轴指示器，坐标轴触发有效
-      //     type: 'line'  // 默认为直线，可选为：'line' | 'shadow'
-      //   },
-      // },
-      // grid: {
-      //   height: 200
-      // },
-      // legend: {
-      //   data: ['涨', '跌']
-      // },
-      grid: {
-        containLabel: true
-      },
-      xAxis: {
-        type: 'category',
-        data: []
-      },
-      yAxis: {
-          type: 'value',
-          scale: true,
-          name: '价格',
-          max: 100,
-          min: 0,
-          boundaryGap: [0.2, 0.2]
-      },
-      series: [
-        {
-          name: '收盘价',
-          type: 'bar',
-          stack: '总量',
-          itemStyle: {
-            barBorderColor: 'rgba(0,0,0,0)',
-            color: 'rgba(0,0,0,0)'
-          },
-          // emphasis: {
-          //   itemStyle: {
-          //     barBorderColor: 'rgba(0,0,0,0)',
-          //     color: 'rgba(0,0,0,0)'
-          //   }
-          // },
-          data: []
-        },
-        {
-          name: '涨',
-          type: 'bar',
-          stack: '总量',
-          itemStyle: {
-            color: '#f73333'
-          },
-          barWidth: 20,
-          data: [],
-          label: {
-            normal: {
-              show: true,
-              position: 'bottom',
-              formatter: (a) => {
-                return (Number.parseFloat(a.value) / Number.parseFloat(a.data.openvalue) * 100).toFixed(2) + '%'
-              }
-            }
-          }
-        },
-        {
-          name: '跌',
-          type: 'bar',
-          stack: '总量',
-          barWidth: 20,
-          itemStyle: {
-            color: '#0fb300'
-          },
-          data: [],
-          label: {
-            normal: {
-              show: true,
-              position: 'bottom',
-              formatter: (a) => {
-                return (Number.parseFloat(a.value) / Number.parseFloat(a.data.openvalue) * 100).toFixed(2) + '%'
-              }
-            }
-          }
-        }
-      ]
-    }
-    // this.echartsReact.getEchartsInstance().setOption(getOption())
+    this.option = chartOption
   }
   componentDidMount () {
     
   }
-  componentDidUpdate () {
-    // if (this.state.stock) {
-    //   this.fetchData()
-    // } else {
-
-    // }
+  async componentDidUpdate () {
+    this.echartsReact.getEchartsInstance().setOption(this.getOption(await this.fetchData()))
   }
 
   async fetchData () {
-    await request()
+    let data = []
+    if (this.props.stock) {
+      const res = await getKline({ stock: this.props.stock })
+      if (res.data.list) {
+        data = res.data.list
+      }
+    }
+    return Promise.resolve(data)
   }
 
-  getOption () {
-    const klines = this.props.data.klines
+  getOption (klines = []) {
     const assiants = []
     const rise = []
     const down = []
     const dates = []
     let maxPrice = 0
     let minPrice = 9999
-    klines && klines.forEach((daily, index) => {
+    klines = klines.slice(klines.length - 10, klines.length)
+    klines.forEach((daily, index) => {
       // 当 index 为 0 时，就默认当天为前一天，这样可以避免逻辑复杂化
       let prevDaily = klines[index - 1] ? klines[index - 1] : daily
       let [prev_date, prev_open, prev_close, _high, _low] = prevDaily.split(',')
@@ -189,4 +95,5 @@ class KlineChart extends Component {
   }
 }
 
-export default KlineChart
+export default connect(state => state.stocks.kline)(KlineChart)
+// export default KlineChart

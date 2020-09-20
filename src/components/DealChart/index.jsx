@@ -1,66 +1,18 @@
 import React, { Component } from 'react'
 import { connect } from "react-redux"
 import { getDealline } from '@/api/stocks'
-import { loadDealline } from '@/store/actions'
-import store from '@/store'
 import ReactEcharts from 'echarts-for-react'
 import { PropTypes } from "prop-types"
+import store from '@/store'
+import moment from "moment"
+import { chartOption } from "./config"
 
 class DealChart extends Component {
-  // static propTypes = {
-  //   date: PropTypes.string,
-  //   stock: PropTypes.string
-  // }
-
-  // static defaultProps = {
-  //   date: '', // 如果有 date 和 stock ，那么就触发内部request  
-  //   stock: ''
-  // }
-
   constructor (props) {
     super(props)
     this.echartsReact = null
-    this.open_price = 0
-    store.subscribe(() => {
-      console.log('state状态改变了，新状态如下')
-    })
-
-    this.option = {
-      legend: {
-        data: ['涨', '跌']
-      },
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'cross',
-          label: {
-            backgroundColor: '#6a7985'
-          }
-        }
-      },
-      xAxis: {
-        type: 'category',
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-      },
-      yAxis: {
-        type: 'value'
-      },
-      series: [{
-        name: '涨',
-        itemStyle: {
-          color: '#f73333',
-        },
-        data: [820, 932, 901, 934, 1290, 1330, 1320],
-        type: 'line'
-      }, {
-        name: '跌',
-        itemStyle: {
-          color: '#0fb300',
-        },
-        data: [820, 932, 901, 934, 1290, 1330, 1320],
-        type: 'line'
-      }]
-    }
+    this.blanceline = 0
+    this.option = chartOption
   }
   componentDidMount () {
     this.fetchData()
@@ -68,34 +20,30 @@ class DealChart extends Component {
 
   async fetchData () {
     let data = null
-    let blanceline = 0
-    if (this.props.date && this.props.stock) {
-      const res = await getDealline({ date: this.props.date, stock: this.props.stock })
-      if (res.data.data) {
-        data = res.data.data
-        blanceline = res.data.open_p
+    // let blanceline = 0
+    if (this.props.stock) {
+      const res = await getDealline({ date: moment(this.props.date || new Date()).format('YYYY-MM-DD'), stock: this.props.stock })
+      if (res.data.list) {
+        data = res.data.list
+        this.blanceline = res.data.open_p * 1
       }
     }
-    return Promise.resolve([data, blanceline])
+    return Promise.resolve(data)
   }
 
   async componentDidUpdate () {
-    console.log('componentDidUpdate:', this.props)
-    const [data, blanceline] = await this.fetchData()
-    let deals = []
-    if (data) {
-      deals = data
-    } else {
-      // deals = this.props.data.data
-    }
-    this.echartsReact.getEchartsInstance().setOption(this.getOption(deals, blanceline))
+    this.echartsReact.getEchartsInstance().setOption(this.getOption(await this.fetchData()))
   }
-  getOption (deals, blanceline = 0) {
+  getOption (deals) {
     // const deals = this.props.data.data
+    const blanceline = this.blanceline || 0
     const prices = []
     const dates = []
     let yMin = 9999
     let yMax = 0
+    this.option.series[0].data = []
+    this.option.series[1].data = []
+    this.option.series[2].data = []
     deals && deals.forEach((daily, index) => {
       const price = daily.p * 1
       prices.push(price)
@@ -108,13 +56,29 @@ class DealChart extends Component {
         yMax = price
       }
 
-
-      if (price < blanceline * 1) {
+      this.option.series[1].data.push(blanceline)
+      if (price < blanceline) {
+        // this.option.series[0].data.push(null)
+        const last0 = this.option.series[0].data[this.option.series[0].data.length - 1]
+        if (last0 > blanceline) {
+          this.option.series[0].data.push(price)
+        } else {
+          this.option.series[0].data.push(null)
+        }
+        this.option.series[2].data.push(price)
+      } else if (price > blanceline) {
         this.option.series[0].data.push(price)
-        this.option.series[1].data.push(null)
-      } else {
-        this.option.series[0].data.push(null)
-        this.option.series[1].data.push(price)
+
+        const last2 = this.option.series[2].data[this.option.series[2].data.length - 1]
+        if (last2 < blanceline) {
+          this.option.series[2].data.push(price)
+        } else {
+          this.option.series[2].data.push(null)
+        }
+        // this.option.series[2].data.push(null)
+      } else if (price === blanceline) {
+        this.option.series[0].data.push(blanceline)
+        this.option.series[2].data.push(blanceline)
       }
       //   // 当 index 为 0 时，就默认当天为前一天，这样可以避免逻辑复杂化
       //   let prevDaily = deals[index - 1] ? deals[index - 1] : daily
@@ -141,38 +105,25 @@ class DealChart extends Component {
       //     assiants.push(open)
       //   }
     })
-    
-    // 跳空高度
-    // this.option.series[0].data = prices
     this.option.xAxis.data = dates
-    // itemStyle: {
-    //   color: '#0fb300'
-    // },
-    this.option.yAxis.max = yMax
-    this.option.yAxis.min = yMin
-    // 涨幅
-    // this.option.series[1].data = rise
-
-    // // 跌幅
-    // this.option.series[2].data = down
-
-    // // X轴的数值处理
-    // this.option.xAxis.data = [...dates].fill(' ')
-    // this.option.xAxis.data[0] = dates[0]
-    // this.option.xAxis.data[dates.length - 1] = dates[dates.length - 1]
-
-    // // Y轴的数值处理
-    // this.option.yAxis.max = (Number.parseFloat(maxPrice) + Number.parseFloat(maxPrice * 0.05)).toFixed(2)
-    // this.option.yAxis.min = (Number.parseFloat(minPrice) - Number.parseFloat(minPrice * 0.05)).toFixed(2)
-    // console.log(this.option.yAxis.max)
-    // console.log(this.option.yAxis.min)
+    const absLimit = yMax - blanceline > blanceline - yMin ? yMax - blanceline : blanceline - yMin
+    this.option.yAxis.max = (absLimit + blanceline + blanceline * 0.01).toFixed(2) * 1
+    this.option.yAxis.min = (blanceline - absLimit - blanceline * 0.01).toFixed(2) * 1
+   
+    this.option.yAxis.axisLabel.formatter = (a, b) => {
+      if (!a || !blanceline) return 0
+      if (a > blanceline) {
+        return (((a - blanceline) / blanceline) * 100).toFixed(0) + '%'
+      }
+      if (a < blanceline) {
+        return (((blanceline - a) / blanceline) * 100).toFixed(0) + '%'
+      }
+      return 0
+    }
     return this.option
   }
   render () {
     return <div>
-      <span>{this.props.date}</span>
-      <span>{this.props.stock}</span>
-      <span>{1234}</span>
       <ReactEcharts
         option={this.getOption()}
         // 获取ReactEcharts的引用

@@ -42,8 +42,8 @@ export async function getLowerpoint(data) {
 }
 
 export async function getDealline(data) {
-  store.dispatch(updateDeal(data))
-  store.dispatch(updateKline(data))
+  // store.dispatch(updateDeal(data))
+  // store.dispatch(updateKline(data))
   return request({
     url: '/api/dealline',
     method: 'post',
@@ -52,10 +52,20 @@ export async function getDealline(data) {
 }
 
 export async function getKline(data) {
-  store.dispatch(updateDeal(data))
-  store.dispatch(updateKline(data))
+  // store.dispatch(updateDeal(data))
+  // store.dispatch(updateKline(data))
   return request({
     url: '/api/kline',
+    method: 'post',
+    data
+  })
+}
+
+export async function getFinalDealDate(data) {
+  // store.dispatch(updateDeal(data))
+  // store.dispatch(updateKline(data))
+  return request({
+    url: '/api/finalDealDate',
     method: 'post',
     data
   })

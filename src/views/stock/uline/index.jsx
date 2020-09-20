@@ -36,28 +36,21 @@ class UlineComponent extends Component {
           const str = record.klines.map((kline) => {return kline.split(',')[0]})
           return <span>{`${str[0]} ~ ${str[str.length - 1]}`}</span>
         }
-      },
-      {
-        title: '图形',
-        dataIndex: 'chart',
-        key: 'chart',
-        width: 600,
-        render: (text, record) => {
-          return <KlineChart data={record} />
-        }
       }
+      // {
+      //   title: '图形',
+      //   dataIndex: 'chart',
+      //   key: 'chart',
+      //   width: 600,
+      //   render: (text, record) => {
+      //     return <KlineChart data={record} />
+      //   }
+      // }
     ],
     searchor: [
       {
-        title: '代码',
-        key: 'code',
-        type: 'input',
-        value: '',
-        style: {},
-      },
-      {
         title: '股票',
-        key: 'name',
+        key: 'stock',
         type: 'input',
         value: '',
         style: {},

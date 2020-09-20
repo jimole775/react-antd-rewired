@@ -1,5 +1,5 @@
 // import { setUserToken, resetUser } from "./user";
-import { getDeals, getKline } from "@/api/stocks";
+import { getDeals, getKline, getFinalDealDate } from "@/api/stocks";
 // import { setToken, removeToken } from "@/utils/auth";
 import * as types from "../action-types";
 
@@ -21,6 +21,11 @@ export const loadDealline = (date, stock) => (dispatch) => {
   })
 }
 
+export const loadFinalDealDate = () => async (dispatch) => {
+  const date = await getFinalDealDate()
+  dispatch(updateFinalDealDate(date))
+}
+
 export const updateKline = ({ stock }) => {
   return {
     type: types.STOCK_KLINE,
@@ -35,3 +40,9 @@ export const updateDeal = ({ date, stock }) => {
   }
 }
 
+export const updateFinalDealDate = ({ date }) => {
+  return {
+    type: types.STOCK_FINALDEALDATE,
+    date
+  }
+}
