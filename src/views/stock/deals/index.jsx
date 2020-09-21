@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { getDeals } from '@/api/stocks'
 import TTable from '@/components/TTable'
 import columns from './columns'
@@ -52,6 +53,9 @@ class DealsComponent extends Component {
     ],
     editModalVisible: false,
     editModalLoading: false,
+  }
+  constructor (props) {
+    super(props)
   }
   searchmonitor (key, val) {
     const searchs = [...this.state.searchor]
@@ -122,4 +126,4 @@ class DealsComponent extends Component {
   }
 }
 
-export default DealsComponent
+export default connect(state => state.stocks)(DealsComponent)

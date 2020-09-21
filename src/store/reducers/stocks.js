@@ -1,11 +1,10 @@
 import * as types from "../action-types";
 const initState = {
-  dealDate: '',
+  finalDealDate: '',
   kline: {},
   deal: {}
 }
 export default function stocks (state = initState, action) {
-  console.log('stocks:', action, state)
   switch (action.type) {
     case types.STOCK_KLINE:
       return {

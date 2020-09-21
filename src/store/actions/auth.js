@@ -5,7 +5,7 @@ export const login = (username, password) => (dispatch) => {
   return new Promise((resolve, reject) => {
     reqLogin({ username: username.trim(), password: password })
       .then((response) => {
-        const { data } = response;
+        const data = response;
         if (data.status === 0) {
           const token = data.token;
           dispatch(setUserToken(token));
@@ -26,7 +26,7 @@ export const logout = (token) => (dispatch) => {
   return new Promise((resolve, reject) => {
     reqLogout(token)
       .then((response) => {
-        const { data } = response;
+        const data = response;
         if (data.status === 0) {
           dispatch(resetUser());
           removeToken();
