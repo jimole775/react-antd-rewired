@@ -10,11 +10,34 @@ const barLabel = {
 }
 export const chartOption = {
   grid: {
-    containLabel: true
+    containLabel: false,
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+      type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+    },
+    formatter: function (params) {
+      var tar;
+      if (params[1].value !== '-') {
+          tar = params[1];
+      }
+      else {
+          tar = params[2];
+      }
+      return tar.name + '<br/>' + tar.seriesName + ' : ' + tar.value;
+    }
   },
   xAxis: {
     type: 'category',
     data: []
+    // data: function () {
+    //     var list = [];
+    //     for (var i = 1; i <= 11; i++) {
+    //         list.push('11月' + i + '日');
+    //     }
+    //     return list;
+    // }()
   },
   yAxis: {
       type: 'value',
@@ -26,7 +49,7 @@ export const chartOption = {
   },
   series: [
     {
-      name: '收盘价',
+      name: ' ',
       type: 'bar',
       stack: '总量',
       itemStyle: {
@@ -42,20 +65,20 @@ export const chartOption = {
       itemStyle: {
         color: '#f73333'
       },
-      barWidth: 20,
-      data: [],
-      label: barLabel
+      barWidth: 5,
+      data: []
+      // label: barLabel
     },
     {
       name: '跌',
       type: 'bar',
       stack: '总量',
-      barWidth: 20,
+      barWidth: 5,
       itemStyle: {
         color: '#0fb300'
       },
-      data: [],
-      label: barLabel
+      data: []
+      // label: barLabel
     }
   ]
 }

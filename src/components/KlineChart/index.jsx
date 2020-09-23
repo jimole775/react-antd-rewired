@@ -36,7 +36,7 @@ class KlineChart extends Component {
     const dates = []
     let maxPrice = 0
     let minPrice = 9999
-    klines = klines.slice(klines.length - 10, klines.length)
+    klines = klines.slice(klines.length - 40, klines.length)
     klines.forEach((daily, index) => {
       // 当 index 为 0 时，就默认当天为前一天，这样可以避免逻辑复杂化
       let prevDaily = klines[index - 1] ? klines[index - 1] : daily
@@ -53,19 +53,19 @@ class KlineChart extends Component {
         // 处理跌幅
         rise.push('-')
         down.push({ openvalue: open, value: Math.abs(diff).toFixed(2) })
-        // 砥柱高度为：前一天的收盘价 + 当天的差价
+        // 柱体高度为：前一天的收盘价 + 当天的差价
         assiants.push(Number.parseFloat(prev_close) + Number.parseFloat(diff))
       } else {
         // 处理涨幅
         rise.push({ openvalue: open, value: diff.toFixed(2) })
         down.push('-')
-        // 砥柱高度为：当天的开盘价
+        // 柱体高度为：当天的开盘价
         assiants.push(open)
       }
       dates.push(date)
     })
-    
-    // 跳空高度
+
+    // 辅助线，使得柱体悬空
     this.option.series[0].data = assiants
 
     // 涨幅
@@ -75,9 +75,10 @@ class KlineChart extends Component {
     this.option.series[2].data = down
 
     // X轴的数值处理
-    this.option.xAxis.data = [...dates].fill(' ')
-    this.option.xAxis.data[0] = dates[0]
-    this.option.xAxis.data[dates.length - 1] = dates[dates.length - 1]
+    // this.option.xAxis.data = [...dates].fill(' ')
+    // this.option.xAxis.data[0] = dates[0]
+    // this.option.xAxis.data[dates.length - 1] = dates[dates.length - 1]
+    this.option.xAxis.data = dates
 
     // Y轴的数值处理
     this.option.yAxis.max = (Number.parseFloat(maxPrice) + Number.parseFloat(maxPrice * 0.05)).toFixed(2)

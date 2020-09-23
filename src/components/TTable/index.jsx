@@ -1,4 +1,4 @@
-import React, { Component, ReactDOM } from "react";
+import React, { Component, ReactDOM } from 'react'
 import {
   Table,
   Tag,
@@ -12,13 +12,15 @@ import {
   Select,
   DatePicker
 } from "antd"
-import { PropTypes } from "prop-types";
+import { PropTypes } from 'prop-types'
+import moment from 'moment'
+import { connect } from 'react-redux'
 // import EditForm from "./forms/editForm"
 // const { Column } = Table
 const { Panel } = Collapse
 const { RangePicker } = DatePicker
 
-export default class TableComponent extends Component {
+class TableComponent extends Component {
   static propTypes = {
     pagination: PropTypes.bool,
     searchor: PropTypes.array,
@@ -216,9 +218,10 @@ export default class TableComponent extends Component {
       }
 
       if (searchItem.type === 'date') {
+        const defaultDate = moment(searchItem.value || this.props.finalDealDate)
         searchNodes.push(
           <Form.Item label={searchItem.title} key={index}>
-            <DatePicker defaultValue={searchItem.value ? searchItem.value : null} onChange={(date, dateString) => this.searchfieldsmonitor(searchItem.key, dateString)} />
+            <DatePicker defaultValue={defaultDate} onChange={(date, dateString) => this.searchfieldsmonitor(searchItem.key, dateString)} />
           </Form.Item>
         )
       }
@@ -295,3 +298,5 @@ export default class TableComponent extends Component {
     )
   }
 }
+
+export default connect(state => state.stocks)(TableComponent)

@@ -38,7 +38,7 @@ class DealsComponent extends Component {
         title: '日期',
         key: 'date',
         type: 'date',
-        value: moment(new Date()),
+        value: this.finalDealDate,
         style: {},
         required: true,
       },
@@ -56,6 +56,8 @@ class DealsComponent extends Component {
   }
   constructor (props) {
     super(props)
+    console.log(moment(props.finalDealDate))
+    this.finalDealDate = props.finalDealDate
   }
   searchmonitor (key, val) {
     const searchs = [...this.state.searchor]
@@ -69,7 +71,6 @@ class DealsComponent extends Component {
     })
   }
   tableUpdate = (newData, state) => {
-    console.log('tableUpdate:', newData, state)
     this.setState({ dataSet: newData, modalShow: true, TTableState: state })
   }
   render () {
