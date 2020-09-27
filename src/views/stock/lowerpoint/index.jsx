@@ -1,6 +1,11 @@
 import React, { Component } from 'react'
 import { getLowerpoint } from '@/api/stocks'
 import TTable from '@/components/TTable'
+import {
+  Input,
+  Select,
+  DatePicker
+} from "antd"
 import columns from './columns'
 import moment from 'moment'
 // import EditForm from './forms/editForm'
@@ -22,26 +27,18 @@ class DealsComponent extends Component {
     columns: columns,
     searchor: [
       {
-        title: '代码',
-        key: 'code',
-        type: 'input',
-        value: '',
-        style: {},
-        required: true,
-      },
-      {
         title: '股票',
-        key: 'name',
-        type: 'input',
-        value: '',
+        key: 'stock',
+        component: Input,
+        default: '',
         style: {},
         required: true,
       },
       {
         title: '日期',
         key: 'date',
-        type: 'date',
-        value: moment(new Date()),
+        component: DatePicker,
+        default: null,
         style: {},
         required: true,
       }

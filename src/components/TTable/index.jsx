@@ -57,13 +57,25 @@ class TableComponent extends Component {
   async fetchData () {
     if (this._isMounted && this.state.loading === false) {
       this.setState({ loading: true })
-      const res = await this.props.fetchApi(this.state.listQuery)
+      const res = await this.props.fetchApi(this.queryFetchParams(this.state.listQuery))
       const list = res.data.list
       const total = res.data.total
       this.props.update(res.data, this.state)
       this.setState({ list, total, loading: false })
     }
     return Promise.resolve()
+  }
+
+  queryFetchParams (params) {
+    const res = {}
+    Object.keys(params).forEach((key) => {
+      let val = params[key]
+      if (val instanceof moment) {
+        val = moment(val).format('YYYY-MM-DD')
+      }
+      res[key] = val
+    })
+    return res
   }
 
   componentDidMount () {
@@ -77,18 +89,18 @@ class TableComponent extends Component {
     this.setState = () => false
   }
 
-  componentDidUpdate (prevProps) {
-    if (this.props.searchor && prevProps.searchor !== this.props.searchor) {
-      this.updateSearchor()
-    }
-  }
+  // componentDidUpdate (prevProps) {
+  //   if (this.props.searchor && prevProps.searchor !== this.props.searchor) {
+  //     this.updateSearchor()
+  //   }
+  // }
 
   updateSearchor () {
-    this.props.searchor.forEach((item, index) => {
+    this.props.searchor.forEach((searchItem, index) => {
       this.setState((state) => {
         const res = {}
-        if (item.value) {
-          res[item.key] = item.value
+        if (searchItem.default) {
+          res[searchItem.key] = searchItem.default
         }
         return { listQuery: { ...state.listQuery, ...res } }
       })
@@ -196,43 +208,80 @@ class TableComponent extends Component {
     return { SearchChildren, SummaryChildren, TableChildren }
   }
 
-  searchfieldsmonitor (key, val) {
+  /**
+   * @bEvent 是预留参数
+   */
+  searchfieldsmonitor (key, aEvent, bEvent) {
+    let val = ''
+    // date类型的事件
+    // if (aEvent instanceof moment) {
+    //   val = moment(aEvent).format('YYYY-MM-DD')
+    // }
+    // input类型的事件
+    if (aEvent.currentTarget) {
+      val = aEvent.currentTarget.value
+    }
     this.setState((state) => {
       return { listQuery: { ...state.listQuery, [key]: val } }
     })
   }
 
+
   createSearchBar (searchor = []) {
     const searchNodes = []
     searchor.forEach((searchItem, index) => {
-      if (searchItem.type === 'input') {
-        searchNodes.push(
-          <Form.Item label={searchItem.title} key={index}>
-            <Input allowClear defaultValue={searchItem.value} onChange={(e) => this.searchfieldsmonitor(searchItem.key, e.currentTarget.value)} />
-          </Form.Item>
-        )
+      if (searchItem.component.name === 'PickerWrapper') {
+        if (!searchItem.default && this.props.finalDealDate) {
+          searchItem.default = moment(this.props.finalDealDate)
+        }
       }
+      searchNodes.push(
+        <Form.Item label={searchItem.title} key={index}>
+          <searchItem.component
+            allowClear defaultValue={searchItem.default}
+            onChange={(a, b) => this.searchfieldsmonitor(searchItem.key, a, b)}
+            onPressEnter={() => this.searchEvent.call(this)}
+          />
+        </Form.Item>
+      )
+      // if (searchItem.type === 'input') {
+      //   searchNodes.push(
+      //     <Form.Item label={searchItem.title} key={index}>
+      //       <component.input
+      //         allowClear defaultValue={searchItem.value}
+      //         onChange={(e) => this.searchfieldsmonitor(searchItem.key, e.currentTarget.value)}
+      //         onPressEnter={() => {console.log('dadsdww')}}
+      //       />
+      //     </Form.Item>
+      //   )
+      // }
 
-      if (searchItem.type === 'select') {
-        searchNodes.push('')
-      }
+      // if (searchItem.type === 'select') {
+      //   searchNodes.push('')
+      // }
 
-      if (searchItem.type === 'date') {
-        const defaultDate = moment(searchItem.value || this.props.finalDealDate)
-        searchNodes.push(
-          <Form.Item label={searchItem.title} key={index}>
-            <DatePicker defaultValue={defaultDate} onChange={(date, dateString) => this.searchfieldsmonitor(searchItem.key, dateString)} />
-          </Form.Item>
-        )
-      }
+      // if (searchItem.type === 'date') {
+      //   if (!searchItem.value) {
+      //     searchItem.value = this.props.finalDealDate
+      //   }
+      //   searchNodes.push(
+      //     <Form.Item label={searchItem.title} key={index}>
+      //       <component.datePicker
+      //         defaultValue={moment(searchItem.value)}
+      //         onChange={(date, dateString) => this.searchfieldsmonitor(searchItem.key, dateString)}
+      //         onPressEnter={() => {console.log('dadsdww')}}
+      //       />
+      //     </Form.Item>
+      //   )
+      // }
 
-      if (searchItem.type === 'dateRange') {
-        searchNodes.push(
-          <Form.Item label={searchItem.title} key={index} style={{width: 100}}>
-            <RangePicker onChange={(date, dateString) => this.searchfieldsmonitor(searchItem.key, dateString)} />
-          </Form.Item>
-        )
-      }
+      // if (searchItem.type === 'dateRange') {
+      //   searchNodes.push(
+      //     <Form.Item label={searchItem.title} key={index} style={{width: 100}}>
+      //       <RangePicker onChange={(date, dateString) => this.searchfieldsmonitor(searchItem.key, dateString)} />
+      //     </Form.Item>
+      //   )
+      // }
     })
     return searchNodes
   }

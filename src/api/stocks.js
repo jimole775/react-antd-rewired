@@ -61,7 +61,7 @@ export async function getKline(data) {
   })
 }
 
-export async function postFinalDealDate(data) {
+export async function getFinalDealDate(data) {
   // store.dispatch(updateDeal(data))
   // store.dispatch(updateKline(data))
   return request({

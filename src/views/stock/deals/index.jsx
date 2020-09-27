@@ -5,8 +5,11 @@ import TTable from '@/components/TTable'
 import columns from './columns'
 import moment from 'moment'
 import DealChart from '@/components/DealChart'
-import { Modal } from 'antd'
-// import EditForm from './forms/editForm'
+import {
+  Input,
+  Select,
+  DatePicker
+} from "antd"
 const color = {
   red: '#ff5858',
   green: '#00c900',
@@ -30,7 +33,8 @@ class DealsComponent extends Component {
         title: '股票',
         key: 'stock',
         type: 'input',
-        value: '000001',
+        default: '000001',
+        component: Input,
         style: {},
         required: true,
       },
@@ -38,15 +42,16 @@ class DealsComponent extends Component {
         title: '日期',
         key: 'date',
         type: 'date',
-        value: this.finalDealDate,
+        component: DatePicker,
+        default: null,
         style: {},
         required: true,
       },
       {
         title: '额度（万）',
         key: 'gradient',
-        type: 'input',
-        value: '',
+        component: Input,
+        default: '',
         style: {},
         required: true,
       }
@@ -56,8 +61,6 @@ class DealsComponent extends Component {
   }
   constructor (props) {
     super(props)
-    console.log(moment(props.finalDealDate))
-    this.finalDealDate = props.finalDealDate
   }
   searchmonitor (key, val) {
     const searchs = [...this.state.searchor]

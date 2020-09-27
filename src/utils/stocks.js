@@ -1,10 +1,10 @@
 const finalDealDate = 'finalDealDate'
 
-export function getFinalDealDate() {
+export function takeFinalDealDate() {
   return sessionStorage.getItem(finalDealDate)
 }
 
-export function setFinalDealDate(token) {
+export function saveFinalDealDate(token) {
   return sessionStorage.setItem(finalDealDate, token)
 }
 

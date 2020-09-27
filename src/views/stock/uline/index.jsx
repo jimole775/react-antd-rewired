@@ -1,6 +1,11 @@
 import React, { Component } from 'react'
 import { getUline } from '@/api/stocks'
 import TTable from '@/components/TTable'
+import {
+  Input,
+  Select,
+  DatePicker
+} from "antd"
 import KlineChart from '@/components/KlineChart'
 import moment from 'moment'
 // import EditForm from './forms/editForm'
@@ -51,15 +56,15 @@ class UlineComponent extends Component {
       {
         title: '股票',
         key: 'stock',
-        type: 'input',
-        value: '',
+        component: Input,
+        default: '',
         style: {},
       },
       {
         title: '日期',
         key: 'date',
-        type: 'date',
-        value: '',
+        component: DatePicker,
+        default: '',
         style: {},
       }
     ],

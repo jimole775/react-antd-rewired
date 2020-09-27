@@ -1,16 +1,9 @@
 import React, { Component } from 'react'
 import {
-  Table,
-  Tag,
-  Form,
-  Button,
   Input,
-  Collapse,
-  Pagination,
-  Divider,
-  message,
-  Select
-} from 'antd'
+  Select,
+  DatePicker
+} from "antd"
 import { getVline } from '@/api/stocks'
 import TTable from '@/components/TTable'
 import columns from './columns'
@@ -33,17 +26,17 @@ class VlineComponent extends Component {
     searchor: [
       {
         title: '股票',
-        key: 'name',
-        type: 'input',
-        value: '',
-        style: {},
+        key: 'stock',
+        component: Input,
+        default: '',
+        style: {}
       },
       {
         title: '日期',
         key: 'date',
-        type: 'date',
-        value: '',
-        style: {},
+        component: DatePicker,
+        default: '',
+        style: {}
       },
       // {
       //   title: '类型',
