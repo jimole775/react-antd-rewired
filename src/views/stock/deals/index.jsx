@@ -32,7 +32,6 @@ class DealsComponent extends Component {
       {
         title: '股票',
         key: 'stock',
-        type: 'input',
         default: '000001',
         component: Input,
         style: {},
@@ -41,7 +40,6 @@ class DealsComponent extends Component {
       {
         title: '日期',
         key: 'date',
-        type: 'date',
         component: DatePicker,
         default: null,
         style: {},

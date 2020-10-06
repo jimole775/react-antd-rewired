@@ -79,3 +79,13 @@ export function decodeStockTime (t) {
   h = h.length === 1 ? '0' + h : h
   return `${h}:${m}:${s}`
 }
+
+export function compare (a, b) {
+  const toString = Object.prototype.toString
+  const aType = toString.call(a)
+  const bType = toString.call(b)
+  if ((aType === '[object Object]' || aType === '[object Array]') && aType === bType) {
+    return JSON.stringify(a) === JSON.stringify(b)
+  }
+  return false
+}

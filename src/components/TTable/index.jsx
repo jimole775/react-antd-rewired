@@ -15,6 +15,7 @@ import {
 import { PropTypes } from 'prop-types'
 import moment from 'moment'
 import { connect } from 'react-redux'
+import { compare } from '@/utils'
 // import EditForm from "./forms/editForm"
 // const { Column } = Table
 const { Panel } = Collapse
@@ -35,41 +36,64 @@ class TableComponent extends Component {
     pagination: false,
     searchor: null,
     columns: null,
+    scroll: {},
     fetchApi: () => {},
     update: () => {},
     onRow: () => {},
-    scroll: {},
   }
-
+  _paramsStage = {} // 暂存当前查询的条件，如果参数相同，就不重复执行【查询】事件，除非使用【reload】方法
   _isMounted = false // 这个变量是用来标志当前组件是否挂载
+  searchNodes = []
+  paramsMap = {
+    pageNumber: 1,
+    pageSize: 10,
+  }
   state = {
     list: [],
-    loading: false,
     total: 0,
-    listQuery: {
-      pageNumber: 1,
-      pageSize: 10,
-    },
-    editModalVisible: false,
-    editModalLoading: false,
+    loading: false,
   }
 
-  async fetchData () {
-    if (this._isMounted && this.state.loading === false) {
+  storageFetchParams (paramsMap) {
+    this._paramsStage = paramsMap
+  }
+
+  async fetching () {
+    const paramsMap = this.formatParams(this.paramsMap)
+    const _paramsStage = this.formatParams(this._paramsStage)
+    if (this._isMounted && this.state.loading === false && !compare(paramsMap, _paramsStage)) {
       this.setState({ loading: true })
-      const res = await this.props.fetchApi(this.queryFetchParams(this.state.listQuery))
-      const list = res.data.list
-      const total = res.data.total
+      const res = await this.props.fetchApi(paramsMap)
+      const list = res.data.list || []
+      const total = res.data.total || 0
       this.props.update(res.data, this.state)
       this.setState({ list, total, loading: false })
+      this.storageFetchParams(paramsMap)
     }
     return Promise.resolve()
   }
 
-  queryFetchParams (params) {
+  async searching () {
+    this.paramsMap.pageNumber = 1
+    await this.fetching()
+    return Promise.resolve()
+  }
+
+  async reload () {
+    this.setState({ loading: true })
+    const res = await this.props.fetchApi(this.formatParams(this.paramsMap))
+    const list = res.data.list || []
+    const total = res.data.total || 0
+    this.props.update(res.data, this.state)
+    this.setState({ list, total, loading: false })
+    return Promise.resolve()
+  }
+
+  // 主要处理moment对象
+  formatParams (paramsMap) {
     const res = {}
-    Object.keys(params).forEach((key) => {
-      let val = params[key]
+    Object.keys(paramsMap).forEach((key) => {
+      let val = paramsMap[key]
       if (val instanceof moment) {
         val = moment(val).format('YYYY-MM-DD')
       }
@@ -78,10 +102,14 @@ class TableComponent extends Component {
     return res
   }
 
+  componentWillMount() {
+    this.searchNodes = this.createSearchBar()
+    this.paramsMap = this.bindSearchorModel()
+  }
+
   componentDidMount () {
     this._isMounted = true
-    this.updateSearchor()
-    this.fetchData()
+    this.fetching()
   }
 
   componentWillUnmount () {
@@ -89,93 +117,30 @@ class TableComponent extends Component {
     this.setState = () => false
   }
 
-  // componentDidUpdate (prevProps) {
-  //   if (this.props.searchor && prevProps.searchor !== this.props.searchor) {
-  //     this.updateSearchor()
-  //   }
-  // }
+  componentWillReceiveProps () {
+    // this.searchNodes = this.createSearchBar()
+  }
 
-  updateSearchor () {
+  bindSearchorModel () {
+    const updatepropty = {}
     this.props.searchor.forEach((searchItem, index) => {
-      this.setState((state) => {
-        const res = {}
-        if (searchItem.default) {
-          res[searchItem.key] = searchItem.default
-        }
-        return { listQuery: { ...state.listQuery, ...res } }
-      })
+      if (searchItem.default) {
+        updatepropty[searchItem.key] = searchItem.default
+      }
     })
+    return { ...this.paramsMap, ...updatepropty }
   }
 
   changePage = (pageNumber, pageSize) => {
-    this.setState(
-      (state) => ({
-        listQuery: {
-          ...state.listQuery,
-          pageNumber,
-        },
-      }),
-      () => {
-        console.log('this.changePage')
-        this.fetchData()
-      }
-    )
+    this.paramsMap = { ...this.paramsMap, pageNumber }
+    this.fetching()
   }
 
   changePageSize = (current, pageSize) => {
-    this.setState(
-      (state) => ({
-        listQuery: {
-          ...state.listQuery,
-          pageNumber: 1,
-          pageSize,
-        },
-      }),
-      () => {
-        console.log('this.changePageSize')
-        this.fetchData()
-      }
-    )
+    this.paramsMap = { ...this.paramsMap, pageSize }
+    this.fetching()
   }
-  // handleDelete = (row) => {
-  //   deleteItem({ id: row.id }).then(res => {
-  //     message.success("删除成功")
-  //     this.fetchData()
-  //   })
-  // }
-  // handleEdit = (row) => {
-  //   this.setState({
-  //     currentRowData: Object.assign({}, row),
-  //     editModalVisible: true,
-  //   })
-  // }
-  // handleOk = _ => {
-  //   const { form } = this.formRef.props;
-  //   form.validateFields((err, fieldsValue) => {
-  //     if (err) {
-  //       return
-  //     }
-  //     const values = {
-  //       ...fieldsValue,
-  //       'star': "".padStart(fieldsValue['star'], '★'),
-  //       'date': fieldsValue['date'].format('YYYY-MM-DD HH:mm:ss'),
-  //     }
-  //     this.setState({ editModalLoading: true, })
-  //     editItem(values).then((response) => {
-  //       form.resetFields()
-  //       this.setState({ editModalVisible: false, editModalLoading: false })
-  //       message.success("编辑成功!")
-  //       this.fetchData()
-  //     }).catch(e => {
-  //       message.success("编辑失败,请重试!")
-  //     })
-  //   })
-  // }
-  // handleCancel = _ => {
-  //   this.setState({
-  //     editModalVisible: false,
-  //   })
-  // }
+
   getSlots ({ children = [] }) {
     let templates = []
     let SearchChildren = ''
@@ -214,22 +179,23 @@ class TableComponent extends Component {
   searchfieldsmonitor (key, aEvent, bEvent) {
     let val = ''
     // date类型的事件
-    // if (aEvent instanceof moment) {
-    //   val = moment(aEvent).format('YYYY-MM-DD')
-    // }
+    if (aEvent instanceof moment) {
+      val = moment(aEvent).format('YYYY-MM-DD')
+    }
     // input类型的事件
     if (aEvent.currentTarget) {
       val = aEvent.currentTarget.value
     }
-    this.setState((state) => {
-      return { listQuery: { ...state.listQuery, [key]: val } }
-    })
+    if (this.paramsMap[key] !== val) {
+      this.paramsMap[key] = val
+    }
   }
 
-
-  createSearchBar (searchor = []) {
+  createSearchBar () {
     const searchNodes = []
+    const searchor = this.props.searchor || []
     searchor.forEach((searchItem, index) => {
+      // PickerWrapper 是 DatePicker 类的组件的组件名
       if (searchItem.component.name === 'PickerWrapper') {
         if (!searchItem.default && this.props.finalDealDate) {
           searchItem.default = moment(this.props.finalDealDate)
@@ -240,77 +206,36 @@ class TableComponent extends Component {
           <searchItem.component
             allowClear defaultValue={searchItem.default}
             onChange={(a, b) => this.searchfieldsmonitor(searchItem.key, a, b)}
-            onPressEnter={() => this.searchEvent.call(this)}
+            onPressEnter={() => this.searching.call(this)}
+            onBlur={() => this.searching.call(this)}
           />
         </Form.Item>
       )
-      // if (searchItem.type === 'input') {
-      //   searchNodes.push(
-      //     <Form.Item label={searchItem.title} key={index}>
-      //       <component.input
-      //         allowClear defaultValue={searchItem.value}
-      //         onChange={(e) => this.searchfieldsmonitor(searchItem.key, e.currentTarget.value)}
-      //         onPressEnter={() => {console.log('dadsdww')}}
-      //       />
-      //     </Form.Item>
-      //   )
-      // }
-
-      // if (searchItem.type === 'select') {
-      //   searchNodes.push('')
-      // }
-
-      // if (searchItem.type === 'date') {
-      //   if (!searchItem.value) {
-      //     searchItem.value = this.props.finalDealDate
-      //   }
-      //   searchNodes.push(
-      //     <Form.Item label={searchItem.title} key={index}>
-      //       <component.datePicker
-      //         defaultValue={moment(searchItem.value)}
-      //         onChange={(date, dateString) => this.searchfieldsmonitor(searchItem.key, dateString)}
-      //         onPressEnter={() => {console.log('dadsdww')}}
-      //       />
-      //     </Form.Item>
-      //   )
-      // }
-
-      // if (searchItem.type === 'dateRange') {
-      //   searchNodes.push(
-      //     <Form.Item label={searchItem.title} key={index} style={{width: 100}}>
-      //       <RangePicker onChange={(date, dateString) => this.searchfieldsmonitor(searchItem.key, dateString)} />
-      //     </Form.Item>
-      //   )
-      // }
     })
     return searchNodes
   }
-  searchEvent () {
-    this.setState((state) => ({
-      listQuery: {
-        ...state.listQuery,
-        pageNumber: 1
-      }
-    }), () => {
-      this.fetchData()
-    })
-  }
+
+  // searchEvent () {
+  //   this.setState((state) => ({
+  //     paramsMap: {
+  //       ...state.paramsMap,
+  //       pageNumber: 1
+  //     }
+  //   }), () => {
+  //     this.fetching()
+  //   })
+  // }
+
   render() {
     const { SearchChildren, SummaryChildren, TableChildren } = this.getSlots(this.props)
     // todo 搜索栏vNode生成
     return (
       <div className="app-container">
-        {/*{(SearchChildren || this.props.searchor) &&
-          // <Collapse defaultActiveKey={["1"]}>
-         <Panel header="筛选" key="1"> 
-            
-          </Panel>
-        </Collapse>}*/}
         <Form layout="inline">
-          {this.createSearchBar(this.props.searchor)}
+          {this.searchNodes}
           {SearchChildren}
           <Form.Item>
-            <Button type="primary" icon="search" onClick={() => this.searchEvent.call(this)}>
+            <Button type="primary" icon="search" onClick={() => this.searching.call(this)}>
               搜索
             </Button>
           </Form.Item>
@@ -338,7 +263,7 @@ class TableComponent extends Component {
           pageSizeOptions={["10", "20", "40"]}
           showTotal={(total) => `共${total}条数据`}
           onChange={this.changePage}
-          current={this.state.listQuery.pageNumber}
+          current={this.paramsMap.pageNumber}
           onShowSizeChange={this.changePageSize}
           showSizeChanger
           showQuickJumper
