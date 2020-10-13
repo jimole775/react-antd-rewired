@@ -10,7 +10,6 @@ const Login = (props) => {
   const { form, token, login, getUserInfo } = props;
   const { getFieldDecorator } = form;
   const [loading, setLoading] = useState(false);
-
   const handleLogin = (username, password) => {
     // 登录完成后 发送请求 调用接口获取用户信息
     setLoading(true);

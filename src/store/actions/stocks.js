@@ -1,33 +1,48 @@
-import { saveFinalDealDate, takeFinalDealDate } from '@/utils/stocks'
-import { getDeals, getKline, getFinalDealDate } from '@/api/stocks'
+import {
+  saveFinalDealDate, takeFinalDealDate,
+  saveUsetoStocks, takeUsetoStocks
+} from '@/utils/stocks'
+import { takeDict } from '@/utils/dicts'
+import { getFinalDealDate } from '@/api/stocks'
 // import { setToken, removeToken } from "@/utils/auth";
 import * as types from "../action-types";
 
-export const loadKline = (stock) => (dispatch) => {
-  return new Promise(async (resolve, reject) => {
-    // if (!stock) reject('loadKline stock 是必要参数！')
-    const res = await getKline(stock)
-    // dispatch(updateKline(date, stock, res.data))
-    resolve(res.data)
-  })
-}
+// export const loadKline = (stock) => (dispatch) => {
+//   return new Promise(async (resolve, reject) => {
+//     const res = await getKline(stock)
+//     resolve(res.data)
+//   })
+// }
 
-export const loadDealline = (date, stock) => (dispatch) => {
-  return new Promise(async (resolve, reject) => {
-    // if (!date || !stock) reject('loadDealline date,stock 是必要参数！')
-    const res = await getDeals(date, stock)
-    // dispatch(updateDeal(date, stock, res.data))
-    resolve(res.data)
-  })
-}
+// export const loadDealline = (date, stock) => (dispatch) => {
+//   return new Promise(async (resolve, reject) => {
+//     const res = await getDeals(date, stock)
+//     resolve(res.data)
+//   })
+// }
 
 export const loadFinalDealDate = () => async (dispatch) => {
-  const storeDate = takeFinalDealDate()
-  if (storeDate) return dispatch(updateFinalDealDate(storeDate))
-  const res = await getFinalDealDate()
-  if (res.code === 20000) {
-    saveFinalDealDate(res.data.date)
-    dispatch(updateFinalDealDate(res.data.date))
+  let storeDate = takeFinalDealDate()
+  if (!storeDate) {
+    const res = await getFinalDealDate()
+    if (res.code === 20000) {
+      storeDate = res.data.date
+    }
+  }
+  saveFinalDealDate(storeDate)
+  return dispatch(updateFinalDealDate(storeDate))
+}
+
+export const updateUsetoStocks = ({ stock }) => {
+  let code = stock || ''
+  if (code.length !== 6) {
+    const name_code = takeDict('name_code') || {}
+    code = name_code[code]
+  }
+  if (code) saveUsetoStocks(code)
+  return {
+    type: types.STOCK_USETOSTOCKS,
+    usetoStocks: takeUsetoStocks()
   }
 }
 

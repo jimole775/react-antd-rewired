@@ -22,5 +22,7 @@ export const BUG_ADD_BUG = "BUG_ADD_BUG";
 export const STOCK_KLINE = "STOCK_KLINE";
 export const STOCK_DEALLINE = "STOCK_DEALLINE";
 export const STOCK_FINALDEALDATE = "STOCK_FINALDEALDATE";
+export const STOCK_USETOSTOCKS = "STOCK_USETOSTOCKS";
+export const DICTS = "DICTS";
 
 

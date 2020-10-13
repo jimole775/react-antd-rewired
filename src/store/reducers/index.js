@@ -5,6 +5,7 @@ import settings from "./settings";
 import tagsView from "./tagsView";
 import monitor from "./monitor";
 import stocks from "./stocks";
+import dicts from "./dicts";
 
 export default combineReducers({
   user,
@@ -12,5 +13,6 @@ export default combineReducers({
   settings,
   tagsView,
   stocks,
+  dicts,
   monitor
 });

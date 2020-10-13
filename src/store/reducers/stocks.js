@@ -1,6 +1,7 @@
 import * as types from "../action-types";
 const initState = {
   finalDealDate: '',
+  usetoStocks: [],
   kline: {},
   deal: {}
 }
@@ -25,6 +26,11 @@ export default function stocks (state = initState, action) {
       return {
         ...state,
         finalDealDate: action.date
+      }
+    case types.STOCK_USETOSTOCKS:
+      return {
+        ...state,
+        usetoStocks: action.usetoStocks
       }
     default:
       return state

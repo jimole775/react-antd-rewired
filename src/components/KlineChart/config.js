@@ -40,12 +40,10 @@ export const chartOption = {
     // }()
   },
   yAxis: {
-      type: 'value',
-      scale: true,
-      name: '价格',
-      max: 100,
-      min: 0,
-      boundaryGap: [0.2, 0.2]
+    type: 'value',
+    scale: true,
+    name: '价格',
+    boundaryGap: [0.2, 0.2]
   },
   series: [
     {

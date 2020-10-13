@@ -1,9 +1,10 @@
 import request from '@/utils/request'
-import store from "@/store";
-import { updateDeal, updateKline }  from '@/store/actions'
+import store from "@/store"
+import { updateDeal, updateKline, updateUsetoStocks }  from '@/store/actions'
 export async function getVline(data) {
   store.dispatch(updateDeal(data))
   store.dispatch(updateKline(data))
+  store.dispatch(updateUsetoStocks(data))
   return request({
     url: '/api/vline',
     method: 'post',
@@ -14,6 +15,7 @@ export async function getVline(data) {
 export async function getUline(data) {
   store.dispatch(updateDeal(data))
   store.dispatch(updateKline(data))
+  store.dispatch(updateUsetoStocks(data))
   return request({
     url: '/api/uline',
     method: 'post',
@@ -24,6 +26,7 @@ export async function getUline(data) {
 export async function getDeals(data) {
   store.dispatch(updateDeal(data))
   store.dispatch(updateKline(data))
+  store.dispatch(updateUsetoStocks(data))
   return request({
     url: '/api/deals',
     method: 'post',
@@ -34,6 +37,7 @@ export async function getDeals(data) {
 export async function getLowerpoint(data) {
   store.dispatch(updateDeal(data))
   store.dispatch(updateKline(data))
+  store.dispatch(updateUsetoStocks(data))
   return request({
     url: '/api/lowerpoint',
     method: 'post',
@@ -42,8 +46,7 @@ export async function getLowerpoint(data) {
 }
 
 export async function getDealline(data) {
-  // store.dispatch(updateDeal(data))
-  // store.dispatch(updateKline(data))
+  store.dispatch(updateUsetoStocks(data))
   return request({
     url: '/api/dealline',
     method: 'post',
@@ -52,8 +55,7 @@ export async function getDealline(data) {
 }
 
 export async function getKline(data) {
-  // store.dispatch(updateDeal(data))
-  // store.dispatch(updateKline(data))
+  store.dispatch(updateUsetoStocks(data))
   return request({
     url: '/api/kline',
     method: 'post',
@@ -61,12 +63,10 @@ export async function getKline(data) {
   })
 }
 
-export async function getFinalDealDate(data) {
-  // store.dispatch(updateDeal(data))
-  // store.dispatch(updateKline(data))
+export async function getFinalDealDate() {
   return request({
     url: '/api/finalDealDate',
     method: 'post',
-    data
+    data: ''
   })
 }

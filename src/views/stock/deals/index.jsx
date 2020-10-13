@@ -32,7 +32,7 @@ class DealsComponent extends Component {
       {
         title: '股票',
         key: 'stock',
-        default: '000001',
+        default: null,
         component: Input,
         style: {},
         required: true,

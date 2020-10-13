@@ -83,8 +83,6 @@ class KlineChart extends Component {
     // Y轴的数值处理
     this.option.yAxis.max = (Number.parseFloat(maxPrice) + Number.parseFloat(maxPrice * 0.05)).toFixed(2)
     this.option.yAxis.min = (Number.parseFloat(minPrice) - Number.parseFloat(minPrice * 0.05)).toFixed(2)
-    // console.log(this.option.yAxis.max)
-    // console.log(this.option.yAxis.min)
     return this.option
   }
   render () {

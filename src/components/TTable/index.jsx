@@ -16,6 +16,7 @@ import { PropTypes } from 'prop-types'
 import moment from 'moment'
 import { connect } from 'react-redux'
 import { compare } from '@/utils'
+import UsetoStocks from '@/components/UsetoStocks'
 // import EditForm from "./forms/editForm"
 // const { Column } = Table
 const { Panel } = Collapse
@@ -43,45 +44,53 @@ class TableComponent extends Component {
   }
   _paramsStage = {} // 暂存当前查询的条件，如果参数相同，就不重复执行【查询】事件，除非使用【reload】方法
   _isMounted = false // 这个变量是用来标志当前组件是否挂载
-  searchNodes = []
-  paramsMap = {
-    pageNumber: 1,
-    pageSize: 10,
-  }
+  // searchNodes = []
   state = {
+    params: {
+      pageNumber: 1,
+      pageSize: 10,
+    },
     list: [],
     total: 0,
     loading: false,
   }
 
-  storageFetchParams (paramsMap) {
-    this._paramsStage = paramsMap
+  storageFetchParams (params) {
+    this._paramsStage = JSON.parse(JSON.stringify(params))
   }
 
+  // 正常http请求
   async fetching () {
-    const paramsMap = this.formatParams(this.paramsMap)
+    const params = this.formatParams(this.state.params)
     const _paramsStage = this.formatParams(this._paramsStage)
-    if (this._isMounted && this.state.loading === false && !compare(paramsMap, _paramsStage)) {
+    if (this._isMounted && this.state.loading === false && !compare(params, _paramsStage)) {
       this.setState({ loading: true })
-      const res = await this.props.fetchApi(paramsMap)
+      const res = await this.props.fetchApi(params)
       const list = res.data.list || []
       const total = res.data.total || 0
       this.props.update(res.data, this.state)
       this.setState({ list, total, loading: false })
-      this.storageFetchParams(paramsMap)
+      this.storageFetchParams(params)
     }
     return Promise.resolve()
   }
 
+  // 查询请求，查询时，确保返回的肯定是第一页
   async searching () {
-    this.paramsMap.pageNumber = 1
-    await this.fetching()
-    return Promise.resolve()
+    this.setState((state) => ({
+      params: {
+        ...state.params,
+        pageNumber: 1
+      }
+    }),
+    () => this.fetching())
   }
 
+  // 重载数据，这个方法的调用时，是已经可以确定场景的
+  // 所以，方法内不用做任何限制，直接拉取数据即可
   async reload () {
     this.setState({ loading: true })
-    const res = await this.props.fetchApi(this.formatParams(this.paramsMap))
+    const res = await this.props.fetchApi(this.formatParams(this.state.params))
     const list = res.data.list || []
     const total = res.data.total || 0
     this.props.update(res.data, this.state)
@@ -90,10 +99,10 @@ class TableComponent extends Component {
   }
 
   // 主要处理moment对象
-  formatParams (paramsMap) {
+  formatParams (params) {
     const res = {}
-    Object.keys(paramsMap).forEach((key) => {
-      let val = paramsMap[key]
+    Object.keys(params).forEach((key) => {
+      let val = params[key]
       if (val instanceof moment) {
         val = moment(val).format('YYYY-MM-DD')
       }
@@ -103,8 +112,8 @@ class TableComponent extends Component {
   }
 
   componentWillMount() {
-    this.searchNodes = this.createSearchBar()
-    this.paramsMap = this.bindSearchorModel()
+    // this.searchNodes = this.createSearchBar()
+    this.bindDefaultParams()
   }
 
   componentDidMount () {
@@ -121,24 +130,49 @@ class TableComponent extends Component {
     // this.searchNodes = this.createSearchBar()
   }
 
-  bindSearchorModel () {
+  bindDefaultParams () {
     const updatepropty = {}
     this.props.searchor.forEach((searchItem, index) => {
+      if (searchItem.key === 'date') {
+        if (!searchItem.default && this.props.finalDealDate) {
+          searchItem.default = moment(this.props.finalDealDate)
+        }
+      }
+      if (searchItem.key === 'stock') {
+        if (!searchItem.default && this.props.usetoStocks) {
+          searchItem.default = this.props.usetoStocks[0]
+        }
+      }
       if (searchItem.default) {
         updatepropty[searchItem.key] = searchItem.default
       }
     })
-    return { ...this.paramsMap, ...updatepropty }
+    this.setState((state) => ({
+      params: {
+        ...state.params,
+        ...updatepropty
+      }
+    }))
   }
 
   changePage = (pageNumber, pageSize) => {
-    this.paramsMap = { ...this.paramsMap, pageNumber }
-    this.fetching()
+    this.setState((state) => ({
+      params: {
+        ...state.params,
+        pageNumber
+      }
+    }),
+    () => this.fetching())
   }
 
   changePageSize = (current, pageSize) => {
-    this.paramsMap = { ...this.paramsMap, pageSize }
-    this.fetching()
+    this.setState((state) => ({
+      params: {
+        ...state.params,
+        pageSize
+      }
+    }),
+    () => this.fetching())
   }
 
   getSlots ({ children = [] }) {
@@ -176,18 +210,34 @@ class TableComponent extends Component {
   /**
    * @bEvent 是预留参数
    */
-  searchfieldsmonitor (key, aEvent, bEvent) {
+  updateParams (key, aEvent, bEvent) {
     let val = ''
+    debugger
+    if (typeof aEvent === 'number') {
+      val = aEvent
+    }
+
+    if (typeof aEvent === 'string') {
+      val = aEvent
+    }
+
     // date类型的事件
     if (aEvent instanceof moment) {
       val = moment(aEvent).format('YYYY-MM-DD')
     }
+
     // input类型的事件
     if (aEvent.currentTarget) {
       val = aEvent.currentTarget.value
     }
-    if (this.paramsMap[key] !== val) {
-      this.paramsMap[key] = val
+
+    if (this.state.params[key] !== val) {
+      this.setState((state) => ({
+        params: {
+          ...state.params,
+          [key]: val
+        }
+      }))
     }
   }
 
@@ -195,17 +245,11 @@ class TableComponent extends Component {
     const searchNodes = []
     const searchor = this.props.searchor || []
     searchor.forEach((searchItem, index) => {
-      // PickerWrapper 是 DatePicker 类的组件的组件名
-      if (searchItem.component.name === 'PickerWrapper') {
-        if (!searchItem.default && this.props.finalDealDate) {
-          searchItem.default = moment(this.props.finalDealDate)
-        }
-      }
       searchNodes.push(
         <Form.Item label={searchItem.title} key={index}>
           <searchItem.component
             allowClear defaultValue={searchItem.default}
-            onChange={(a, b) => this.searchfieldsmonitor(searchItem.key, a, b)}
+            onChange={(a, b) => this.updateParams(searchItem.key, a, b)}
             onPressEnter={() => this.searching.call(this)}
             onBlur={() => this.searching.call(this)}
           />
@@ -215,35 +259,23 @@ class TableComponent extends Component {
     return searchNodes
   }
 
-  // searchEvent () {
-  //   this.setState((state) => ({
-  //     paramsMap: {
-  //       ...state.paramsMap,
-  //       pageNumber: 1
-  //     }
-  //   }), () => {
-  //     this.fetching()
-  //   })
-  // }
-
   render() {
     const { SearchChildren, SummaryChildren, TableChildren } = this.getSlots(this.props)
     // todo 搜索栏vNode生成
     return (
       <div className="app-container">
         <Form layout="inline">
-          {this.searchNodes}
+          {this.createSearchBar()}
           {SearchChildren}
-          <Form.Item>
-            <Button type="primary" icon="search" onClick={() => this.searching.call(this)}>
-              搜索
-            </Button>
-          </Form.Item>
         </Form>
+        <UsetoStocks onClick={
+          (stock) => {
+            this.updateParams.call(this, 'stock', stock)
+            this.searching.call(this)
+          }
+        } />
         <br />
-        {
-          SummaryChildren
-        }
+        {SummaryChildren}
         <Table
           bordered
           scroll={this.props.scroll}
@@ -263,7 +295,7 @@ class TableComponent extends Component {
           pageSizeOptions={["10", "20", "40"]}
           showTotal={(total) => `共${total}条数据`}
           onChange={this.changePage}
-          current={this.paramsMap.pageNumber}
+          current={this.state.params.pageNumber}
           onShowSizeChange={this.changePageSize}
           showSizeChanger
           showQuickJumper
@@ -273,4 +305,6 @@ class TableComponent extends Component {
   }
 }
 
-export default connect(state => state.stocks)(TableComponent)
+export default connect(state => {
+  return state.stocks
+})(TableComponent)
