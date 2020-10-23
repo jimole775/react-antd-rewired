@@ -55,8 +55,8 @@ class Meun extends Component {
           const cItem = item.children.find(
             (cItem) => path.indexOf(cItem.path) === 0
           );
-          // 如果存在, 说明当前item的子列表需要打开
-          if (cItem) {
+          // 如果存在, 并且menu在展开状态，说明当前item的子列表需要打开
+          if (cItem && !this.props.sidebarCollapsed) {
             this.setState((state) => ({
               openKey: [...state.openKey, item.path],
             }));
@@ -154,4 +154,7 @@ class Meun extends Component {
   }
 }
 
-export default connect((state) => state.user, { addTag })(withRouter(Meun));
+export default connect((state) => ({
+  ...state.user,
+  ...state.app
+}), { addTag })(withRouter(Meun))

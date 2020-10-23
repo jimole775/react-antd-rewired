@@ -33,6 +33,10 @@ export const loadFinalDealDate = () => async (dispatch) => {
   return dispatch(updateFinalDealDate(storeDate))
 }
 
+export const loadUsetoStocks = () => (dispatch) => {
+  dispatch(updateUsetoStocks({}))
+}
+
 export const updateUsetoStocks = ({ stock }) => {
   let code = stock || ''
   if (code.length !== 6) {

@@ -15,8 +15,9 @@ export function removeFinalDealDate () {
 
 export function saveUsetoStocks (code) {
   const stocks = takeUsetoStocks() || []
-  if (stocks.length < 20 && !stocks.includes(code)) {
+  if (!stocks.includes(code)) {
     stocks.unshift(code)
+    if (stocks.length > 20) stocks.pop()
     localStorage.setItem(usetoStock, JSON.stringify(stocks))
   }
 }

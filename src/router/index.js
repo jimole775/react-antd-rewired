@@ -1,12 +1,16 @@
 import React from "react";
 import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
-import { getUserInfo } from "@/store/actions";
+import { getUserInfo, loadDict, loadFinalDealDate, loadUsetoStocks } from "@/store/actions";
 import Layout from "@/views/layout";
 import Login from "@/views/login";
 class Router extends React.Component {
   render() {
-    const { token, role, getUserInfo } = this.props;
+    const { token, role, getUserInfo, loadDict, loadFinalDealDate, loadUsetoStocks } = this.props;
+    loadDict('code_name')
+    loadDict('name_code')
+    loadFinalDealDate()
+    loadUsetoStocks()
     return (
       <HashRouter>
         <Switch>
@@ -31,4 +35,4 @@ class Router extends React.Component {
   }
 }
 
-export default connect((state) => state.user, { getUserInfo })(Router);
+export default connect((state) => state.user, { getUserInfo, loadDict, loadFinalDealDate, loadUsetoStocks })(Router);

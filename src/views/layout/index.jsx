@@ -7,12 +7,8 @@ import RightBar from "./RightBar"
 import Sider from "./Sider"
 import TagsView from "./TagsView"
 import { Layout } from "antd"
-import { loadDict, loadFinalDealDate } from "@/store/actions"
 const Main = (props) => {
-  const { tagsView, loadDict, loadFinalDealDate } = props
-  loadDict('code_name')
-  loadDict('name_code')
-  loadFinalDealDate()
+  const { tagsView } = props
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider />
@@ -26,4 +22,4 @@ const Main = (props) => {
     </Layout>
   )
 }
-export default connect((state) => state.settings, { loadDict, loadFinalDealDate })(Main)
+export default connect((state) => state.settings)(Main)

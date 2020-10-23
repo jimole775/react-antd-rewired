@@ -134,12 +134,12 @@ class TableComponent extends Component {
     const updatepropty = {}
     this.props.searchor.forEach((searchItem, index) => {
       if (searchItem.key === 'date') {
-        if (!searchItem.default && this.props.finalDealDate) {
+        if (!searchItem.default && searchItem.required && this.props.finalDealDate) {
           searchItem.default = moment(this.props.finalDealDate)
         }
       }
       if (searchItem.key === 'stock') {
-        if (!searchItem.default && this.props.usetoStocks) {
+        if (!searchItem.default && searchItem.required && this.props.usetoStocks) {
           searchItem.default = this.props.usetoStocks[0]
         }
       }
@@ -211,8 +211,8 @@ class TableComponent extends Component {
    * @bEvent 是预留参数
    */
   updateParams (key, aEvent, bEvent) {
-    let val = ''
     debugger
+    let val = ''
     if (typeof aEvent === 'number') {
       val = aEvent
     }
@@ -248,7 +248,7 @@ class TableComponent extends Component {
       searchNodes.push(
         <Form.Item label={searchItem.title} key={index}>
           <searchItem.component
-            allowClear defaultValue={searchItem.default}
+            allowClear value={searchItem.default}
             onChange={(a, b) => this.updateParams(searchItem.key, a, b)}
             onPressEnter={() => this.searching.call(this)}
             onBlur={() => this.searching.call(this)}
@@ -258,9 +258,17 @@ class TableComponent extends Component {
     })
     return searchNodes
   }
-
+  updateStockView (stock) {
+    const searchor = this.props.searchor || []
+    searchor.forEach((searchItem, index) => {
+      if (searchItem.key === 'stock') {
+        searchItem.default = stock
+      }
+    })
+  }
   render() {
     const { SearchChildren, SummaryChildren, TableChildren } = this.getSlots(this.props)
+    debugger
     // todo 搜索栏vNode生成
     return (
       <div className="app-container">
@@ -271,6 +279,7 @@ class TableComponent extends Component {
         <UsetoStocks onClick={
           (stock) => {
             this.updateParams.call(this, 'stock', stock)
+            this.updateStockView.call(this, stock)
             this.searching.call(this)
           }
         } />
