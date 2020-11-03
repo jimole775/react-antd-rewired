@@ -18,10 +18,10 @@ export default {
    * @description Whether fix the header
    */
   fixedHeader: false,
-  
+
   /**
    * @type {boolean} true | false
    * @description Whether need tagsView
    */
   tagsView: true,
-};
+}

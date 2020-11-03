@@ -17,6 +17,11 @@ import moment from 'moment'
 import { connect } from 'react-redux'
 import { compare } from '@/utils'
 import UsetoStocks from '@/components/UsetoStocks'
+import { AgGridColumn, AgGridReact } from 'ag-grid-react'
+
+// import 'ag-grid-enterprise'
+import 'ag-grid-community/dist/styles/ag-grid.css'
+import 'ag-grid-community/dist/styles/ag-theme-alpine.css'
 // import EditForm from "./forms/editForm"
 // const { Column } = Table
 const { Panel } = Collapse
@@ -32,7 +37,6 @@ class TableComponent extends Component {
     scroll: PropTypes.object,
     onRow: PropTypes.func
   }
-
   static defaultProps = {
     pagination: false,
     searchor: null,
@@ -44,7 +48,6 @@ class TableComponent extends Component {
   }
   _paramsStage = {} // 暂存当前查询的条件，如果参数相同，就不重复执行【查询】事件，除非使用【reload】方法
   _isMounted = false // 这个变量是用来标志当前组件是否挂载
-  // searchNodes = []
   state = {
     params: {
       pageNumber: 1,
@@ -53,7 +56,18 @@ class TableComponent extends Component {
     list: [],
     total: 0,
     loading: false,
+    gridApi: {},
+    gridColumnApi: {}
   }
+
+  // const [gridApi, setGridApi] = useState(null)
+  // const [gridColumnApi, setGridColumnApi] = useState(null)
+
+  // const [rowData, setRowData] = useState([
+  //   {make: 'Toyota', model: 'Celica', price: 35000},
+  //   {make: 'Ford', model: 'Mondeo', price: 32000},
+  //   {make: 'Porsche', model: 'Boxter', price: 72000}
+  // ])
 
   storageFetchParams (params) {
     this._paramsStage = JSON.parse(JSON.stringify(params))
@@ -211,7 +225,6 @@ class TableComponent extends Component {
    * @bEvent 是预留参数
    */
   updateParams (key, aEvent, bEvent) {
-    debugger
     let val = ''
     if (typeof aEvent === 'number') {
       val = aEvent
@@ -240,7 +253,31 @@ class TableComponent extends Component {
       }))
     }
   }
-
+  createAGridColumns () {
+    return this.props.columns.map(colItem => {
+      if (colItem.render) {
+        return (<AgGridColumn
+          sortable={true}
+          colId={colItem.key}
+          field={colItem.key}
+          headerName={colItem.title}
+          cellRendererFramework={params => colItem.render(params.value, params.data)}
+        />)
+      } else {
+        return (<AgGridColumn
+          sortable={true}
+          colId={colItem.key}
+          field={colItem.key}
+          headerName={colItem.title}
+        />)
+      }
+    })
+  }
+  onGridReady(params) {
+    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+    // setGridApi(params.api)
+    // setGridColumnApi(params.columnApi)
+  }
   createSearchBar () {
     const searchNodes = []
     const searchor = this.props.searchor || []
@@ -256,6 +293,7 @@ class TableComponent extends Component {
         </Form.Item>
       )
     })
+    console.log(searchNodes)
     return searchNodes
   }
   updateStockView (stock) {
@@ -268,7 +306,6 @@ class TableComponent extends Component {
   }
   render() {
     const { SearchChildren, SummaryChildren, TableChildren } = this.getSlots(this.props)
-    debugger
     // todo 搜索栏vNode生成
     return (
       <div className="app-container">
@@ -285,7 +322,7 @@ class TableComponent extends Component {
         } />
         <br />
         {SummaryChildren}
-        <Table
+        {/* <Table
           bordered
           scroll={this.props.scroll}
           dataSource={this.state.list}
@@ -293,15 +330,22 @@ class TableComponent extends Component {
           rowKey={this.props.rowKey}
           columns={this.props.columns}
           onRow={this.props.onRow}
-          pagination={false} /* 不使用table的原生分页 */
+          pagination={false}
         >
           {TableChildren}
-        </Table>
+        </Table> */}
+        <div className="ag-theme-alpine" style={{ height: 400, width: '100%' }}>
+          <AgGridReact
+            rowData={this.state.list}
+          >
+            {this.createAGridColumns()}
+          </AgGridReact>
+        </div>
         <br />
         {this.props.pagination &&
         <Pagination
           total={this.state.total}
-          pageSizeOptions={["10", "20", "40"]}
+          pageSizeOptions={["10", "20", "40", "9999"]}
           showTotal={(total) => `共${total}条数据`}
           onChange={this.changePage}
           current={this.state.params.pageNumber}

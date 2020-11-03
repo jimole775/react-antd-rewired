@@ -16,7 +16,10 @@ export default [
     title: '价格',
     dataIndex: 'p',
     key: 'p',
-    render: (text, record) => <span style={{color: record.bs === 2 ? color.red : record.bs === 1 ? color.green : ''}}>{text} 元</span>
+    render: (text, record) => {
+      debugger
+      return <span style={{color: record.bs === 2 ? color.red : record.bs === 1 ? color.green : ''}}>{text} 元</span>
+    }
   },
   {
     title: '手数',
@@ -25,6 +28,9 @@ export default [
   },
   {
     title: '总额',
-    render: (text, record) => <span style={{color: record.bs === 2 ? color.red : record.bs === 1 ? color.green : ''}}>{boundMoneySize(record.p * record.v * 100)}</span>
+    render: (text, record) => {
+      debugger
+      return <span style={{color: record.bs === 2 ? color.red : record.bs === 1 ? color.green : ''}}>{boundMoneySize(record.p * record.v * 100)}</span>
+    }
   },
 ]

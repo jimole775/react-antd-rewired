@@ -55,7 +55,7 @@ const LayoutHeader = (props) => {
     if (fixedHeader) {
       if (sidebarCollapsed) {
         styles = {
-          width: "calc(100% - 80px)",
+          width: "calc(100% - 60px)",
         };
       } else {
         styles = {
