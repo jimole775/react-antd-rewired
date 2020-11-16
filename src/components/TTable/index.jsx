@@ -60,15 +60,6 @@ class TableComponent extends Component {
     gridColumnApi: {}
   }
 
-  // const [gridApi, setGridApi] = useState(null)
-  // const [gridColumnApi, setGridColumnApi] = useState(null)
-
-  // const [rowData, setRowData] = useState([
-  //   {make: 'Toyota', model: 'Celica', price: 35000},
-  //   {make: 'Ford', model: 'Mondeo', price: 32000},
-  //   {make: 'Porsche', model: 'Boxter', price: 72000}
-  // ])
-
   storageFetchParams (params) {
     this._paramsStage = JSON.parse(JSON.stringify(params))
   }
@@ -258,6 +249,7 @@ class TableComponent extends Component {
       if (colItem.render) {
         return (<AgGridColumn
           sortable={true}
+          key={colItem.key}
           colId={colItem.key}
           field={colItem.key}
           headerName={colItem.title}
@@ -266,6 +258,7 @@ class TableComponent extends Component {
       } else {
         return (<AgGridColumn
           sortable={true}
+          key={colItem.key}
           colId={colItem.key}
           field={colItem.key}
           headerName={colItem.title}
