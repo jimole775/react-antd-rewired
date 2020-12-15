@@ -18,10 +18,10 @@ import { connect } from 'react-redux'
 import { compare } from '@/utils'
 import UsetoStocks from '@/components/UsetoStocks'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react'
-
+import './index.less'
 // import 'ag-grid-enterprise'
-import 'ag-grid-community/dist/styles/ag-grid.css'
-import 'ag-grid-community/dist/styles/ag-theme-alpine.css'
+// import 'ag-grid-community/dist/styles/ag-grid.css'
+// import 'ag-grid-community/dist/styles/ag-theme-alpine.css'
 // import EditForm from "./forms/editForm"
 // const { Column } = Table
 const { Panel } = Collapse
@@ -135,6 +135,13 @@ class TableComponent extends Component {
     // this.searchNodes = this.createSearchBar()
   }
 
+  decorateColumns (columns) {
+    return columns.map((colItem) => {
+      colItem.className = 'cellStyle'
+      return colItem
+    })
+  }
+
   bindDefaultParams () {
     const updatepropty = {}
     this.props.searchor.forEach((searchItem, index) => {
@@ -236,34 +243,27 @@ class TableComponent extends Component {
     }
 
     if (this.state.params[key] !== val) {
+      this.updateSearchorView(key, val)
       this.setState((state) => ({
         params: {
           ...state.params,
           [key]: val
         }
-      }))
+      }),
+      () => this.fetching())
     }
   }
   createAGridColumns () {
-    return this.props.columns.map(colItem => {
-      if (colItem.render) {
-        return (<AgGridColumn
-          sortable={true}
-          key={colItem.key}
-          colId={colItem.key}
-          field={colItem.key}
-          headerName={colItem.title}
-          cellRendererFramework={params => colItem.render(params.value, params.data)}
-        />)
-      } else {
-        return (<AgGridColumn
-          sortable={true}
-          key={colItem.key}
-          colId={colItem.key}
-          field={colItem.key}
-          headerName={colItem.title}
-        />)
-      }
+    return this.props.columns.map((colItem, index) => {
+      return (<AgGridColumn
+        sortable={true}
+        key={index}
+        colId={index}
+        field={colItem.key}
+        width={colItem.width ? colItem.width : 100}
+        headerComponentFramework={() => colItem.titleRender ? colItem.titleRender() : colItem.title}
+        cellRendererFramework={params => colItem.render ? colItem.render(params.value, params.data) : params.value}
+      />)
     })
   }
   onGridReady(params) {
@@ -278,7 +278,8 @@ class TableComponent extends Component {
       searchNodes.push(
         <Form.Item label={searchItem.title} key={index}>
           <searchItem.component
-            allowClear value={searchItem.default}
+            allowClear
+            value={searchItem.required ? searchItem.default : searchItem.value}
             onChange={(a, b) => this.updateParams(searchItem.key, a, b)}
             onPressEnter={() => this.searching.call(this)}
             onBlur={() => this.searching.call(this)}
@@ -286,14 +287,13 @@ class TableComponent extends Component {
         </Form.Item>
       )
     })
-    console.log(searchNodes)
     return searchNodes
   }
-  updateStockView (stock) {
+  updateSearchorView (key, value) {
     const searchor = this.props.searchor || []
     searchor.forEach((searchItem, index) => {
-      if (searchItem.key === 'stock') {
-        searchItem.default = stock
+      if (searchItem.key === key) {
+        searchItem.value = value
       }
     })
   }
@@ -307,33 +307,34 @@ class TableComponent extends Component {
           {SearchChildren}
         </Form>
         <UsetoStocks onClick={
-          (stock) => {
+          stock => {
             this.updateParams.call(this, 'stock', stock)
-            this.updateStockView.call(this, stock)
+            this.updateSearchorView.call(this, 'stock', stock)
             this.searching.call(this)
           }
         } />
         <br />
         {SummaryChildren}
-        {/* <Table
-          bordered
+        <Table
+          size="mall"
           scroll={this.props.scroll}
           dataSource={this.state.list}
           loading={this.state.loading}
           rowKey={this.props.rowKey}
-          columns={this.props.columns}
+          columns={this.decorateColumns(this.props.columns)}
           onRow={this.props.onRow}
           pagination={false}
         >
           {TableChildren}
-        </Table> */}
-        <div className="ag-theme-alpine" style={{ height: 400, width: '100%' }}>
+        </Table>
+        {/* <div className="ag-theme-alpine" style={{ height: 400, width: 600 }}>
           <AgGridReact
             rowData={this.state.list}
+            suppressMultiSort={true}
           >
             {this.createAGridColumns()}
           </AgGridReact>
-        </div>
+        </div> */}
         <br />
         {this.props.pagination &&
         <Pagination
