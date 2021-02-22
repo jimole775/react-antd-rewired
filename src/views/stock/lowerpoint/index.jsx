@@ -32,7 +32,7 @@ class DealsComponent extends Component {
         component: Input,
         default: '',
         style: {},
-        required: true,
+        required: false,
       },
       {
         title: '日期',
