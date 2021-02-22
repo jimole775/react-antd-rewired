@@ -3,6 +3,8 @@ import {
   Table,
   Tag,
   Form,
+  Row,
+  Col,
   Button,
   Input,
   Collapse,
@@ -108,7 +110,7 @@ class TableComponent extends Component {
     const res = {}
     Object.keys(params).forEach((key) => {
       let val = params[key]
-      if (val instanceof moment) {
+      if (val && val._isAMomentObject) {
         val = moment(val).format('YYYY-MM-DD')
       }
       res[key] = val
@@ -233,7 +235,7 @@ class TableComponent extends Component {
     }
 
     // date类型的事件
-    if (aEvent instanceof moment) {
+    if (aEvent && aEvent._isAMomentObject) {
       val = moment(aEvent).format('YYYY-MM-DD')
     }
 
@@ -241,9 +243,8 @@ class TableComponent extends Component {
     if (aEvent.currentTarget) {
       val = aEvent.currentTarget.value
     }
-
     if (this.state.params[key] !== val) {
-      this.updateSearchorView(key, val)
+      this.updateSearchorView(key, aEvent)
       this.setState((state) => ({
         params: {
           ...state.params,
@@ -276,15 +277,22 @@ class TableComponent extends Component {
     const searchor = this.props.searchor || []
     searchor.forEach((searchItem, index) => {
       searchNodes.push(
-        <Form.Item label={searchItem.title} key={index}>
-          <searchItem.component
-            allowClear
-            value={searchItem.required ? searchItem.default : searchItem.value}
-            onChange={(a, b) => this.updateParams(searchItem.key, a, b)}
-            onPressEnter={() => this.searching.call(this)}
-            onBlur={() => this.searching.call(this)}
-          />
-        </Form.Item>
+        <Col span={6}>
+          <Form.Item
+            style={{width: '100%'}}
+            label={searchItem.title}
+            key={index}
+          >
+            <searchItem.component
+              allowClear
+              default={searchItem.default}
+              value={searchItem.value}
+              onChange={(a, b) => this.updateParams(searchItem.key, a, b)}
+              onPressEnter={() => this.searching.call(this)}
+              onBlur={() => this.searching.call(this)}
+            />
+          </Form.Item>
+        </Col>
       )
     })
     return searchNodes
@@ -293,6 +301,10 @@ class TableComponent extends Component {
     const searchor = this.props.searchor || []
     searchor.forEach((searchItem, index) => {
       if (searchItem.key === key) {
+        // input类型的事件
+        if (value.currentTarget) {
+          value = value.currentTarget.value
+        }
         searchItem.value = value
       }
     })
@@ -302,14 +314,19 @@ class TableComponent extends Component {
     // todo 搜索栏vNode生成
     return (
       <div className="app-container">
-        <Form layout="inline">
-          {this.createSearchBar()}
-          {SearchChildren}
+        <Form
+          layout="inline"
+          labelCol={{ span: 8 }}
+          wrapperCol={{ span: 16 }}
+        >
+          <Row>
+            {this.createSearchBar()}
+            {SearchChildren}
+          </Row>
         </Form>
         <UsetoStocks onClick={
           stock => {
             this.updateParams.call(this, 'stock', stock)
-            this.updateSearchorView.call(this, 'stock', stock)
             this.searching.call(this)
           }
         } />

@@ -5,6 +5,7 @@ import TTable from '@/components/TTable'
 import columns from './columns'
 import moment from 'moment'
 import DealChart from '@/components/DealChart'
+import StockSelect from '@/components/StockSelect'
 import {
   Input,
   Select,
@@ -33,7 +34,7 @@ class DealsComponent extends Component {
         title: '股票',
         key: 'stock',
         default: null,
-        component: Input,
+        component: StockSelect,
         style: {},
         required: true,
       },

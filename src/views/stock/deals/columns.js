@@ -17,7 +17,6 @@ export default [
     dataIndex: 'p',
     key: 'p',
     render: (text, record) => {
-      debugger
       return <span style={{color: record.bs === 2 ? color.red : record.bs === 1 ? color.green : ''}}>{text} 元</span>
     }
   },
@@ -29,7 +28,6 @@ export default [
   {
     title: '总额',
     render: (text, record) => {
-      debugger
       return <span style={{color: record.bs === 2 ? color.red : record.bs === 1 ? color.green : ''}}>{boundMoneySize(record.p * record.v * 100)}</span>
     }
   },

@@ -1,36 +1,46 @@
-import React from "react";
+import React, {useState} from "react";
 import { connect } from "react-redux";
 import { Input, Select } from "antd";
 import { toggleSettingPanel } from "@/store/actions";
+const { Option } = Select;
 const StockSelect = (props) => {
-  const { toggleSettingPanel } = props;
-  <Select
+  const [state, setState] = useState(props);
+
+  const handleSearch = value => {
+    if (value) {
+      fetch(value, state);
+    }
+  };
+  
+  const handleChange = value => {
+    // this.setState({ value });
+    setState({ value })
+  };
+  const fetch = value => {
+    
+  };
+  
+  const createOptions = value => {
+    return (<Option value="jack">Jack</Option>)
+  };
+
+  return (<Select
     showSearch
-    value={this.state.value}
-    placeholder={this.props.placeholder}
-    style={this.props.style}
-    defaultActiveFirstOption={false}
     showArrow={false}
+    labelInValue={true}
     filterOption={false}
-    onSearch={this.handleSearch}
-    onChange={this.handleChange}
+    style={{width: '100%'}}
+    value={state.value}
+    defaultActiveFirstOption={false}
+    placeholder={props.placeholder}
+    onSearch={handleSearch}
+    onChange={handleChange}
     notFoundContent={null}
   >
-    {options}
-  </Select>
+    {createOptions()}
+  </Select>)
 }
 
-handleSearch = value => {
-  if (value) {
-    fetch(value, data => this.setState({ data }));
-  } else {
-    this.setState({ data: [] });
-  }
-};
-
-handleChange = value => {
-  this.setState({ value });
-};
 
 export default connect(state => {
   return state.dicts
