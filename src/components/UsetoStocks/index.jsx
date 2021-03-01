@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { getDealline } from '@/api/stocks'
 import ReactEcharts from 'echarts-for-react'
 import { PropTypes } from 'prop-types'
+import { updateCurrentStock }  from '@/store/actions'
 import store from '@/store'
 import moment from 'moment'
 
@@ -30,7 +31,14 @@ class UsetoStocks extends Component {
       <div>
         {
           this.props.usetoStocks.map((stock) => {
-            return (<a key={stock} onClick={() => this.props.onClick(stock)}>{this.props.code_name[stock]}&nbsp;&nbsp;</a>)
+            return (
+              <a key={stock} onClick={() => {
+                  store.dispatch(updateCurrentStock(stock))
+                  this.props.onClick(stock)
+                }}>
+                { this.props.code_name[stock] }&nbsp;&nbsp;
+              </a>
+            )
           })
         }
       </div>
@@ -40,4 +48,4 @@ class UsetoStocks extends Component {
 
 export default connect(state => {
   return { ...state.stocks, ...state.dicts }
-})(UsetoStocks)
+}, {})(UsetoStocks)

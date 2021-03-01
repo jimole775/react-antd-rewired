@@ -9,6 +9,7 @@ import {
 import KlineChart from '@/components/KlineChart'
 import moment from 'moment'
 // import EditForm from './forms/editForm'
+import StockSelect from '@/components/StockSelect'
 function boundMoneySize (val) {
   return `${Math.round(val/10000)} 万元`
 }
@@ -56,9 +57,10 @@ class UlineComponent extends Component {
       {
         title: '股票',
         key: 'stock',
-        component: Input,
-        default: '',
+        default: null,
+        component: StockSelect,
         style: {},
+        required: true,
       },
       {
         title: '日期',

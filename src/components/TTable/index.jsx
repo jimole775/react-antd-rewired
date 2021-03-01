@@ -147,16 +147,16 @@ class TableComponent extends Component {
   bindDefaultParams () {
     const updatepropty = {}
     this.props.searchor.forEach((searchItem, index) => {
-      if (searchItem.key === 'date') {
-        if (!searchItem.default && searchItem.required && this.props.finalDealDate) {
-          searchItem.default = moment(this.props.finalDealDate)
-        }
-      }
-      if (searchItem.key === 'stock') {
-        if (!searchItem.default && searchItem.required && this.props.usetoStocks) {
-          searchItem.default = this.props.usetoStocks[0]
-        }
-      }
+      // if (searchItem.key === 'date') {
+      //   if (!searchItem.default && searchItem.required && this.props.finalDealDate) {
+      //     searchItem.default = moment(this.props.finalDealDate)
+      //   }
+      // }
+      // if (searchItem.key === 'stock') {
+      //   if (!searchItem.default && searchItem.required && this.props.usetoStocks) {
+      //     searchItem.default = this.props.usetoStocks[0]
+      //   }
+      // }
       if (searchItem.default) {
         updatepropty[searchItem.key] = searchItem.default
       }
@@ -240,7 +240,7 @@ class TableComponent extends Component {
     }
 
     // input类型的事件
-    if (aEvent.currentTarget) {
+    if (aEvent && aEvent.currentTarget) {
       val = aEvent.currentTarget.value
     }
     if (this.state.params[key] !== val) {
@@ -277,17 +277,19 @@ class TableComponent extends Component {
     const searchor = this.props.searchor || []
     searchor.forEach((searchItem, index) => {
       searchNodes.push(
-        <Col span={6}>
+        <Col span={6} key={index}>
           <Form.Item
             style={{width: '100%'}}
             label={searchItem.title}
             key={index}
           >
             <searchItem.component
-              allowClear
-              default={searchItem.default}
+              allowClear={true}
+              defaultValue={searchItem.default}
               value={searchItem.value}
-              onChange={(a, b) => this.updateParams(searchItem.key, a, b)}
+              onChange={(a, b) => {
+                this.updateParams(searchItem.key, a, b)
+              }}
               onPressEnter={() => this.searching.call(this)}
               onBlur={() => this.searching.call(this)}
             />
@@ -298,11 +300,12 @@ class TableComponent extends Component {
     return searchNodes
   }
   updateSearchorView (key, value) {
+    debugger
     const searchor = this.props.searchor || []
     searchor.forEach((searchItem, index) => {
       if (searchItem.key === key) {
         // input类型的事件
-        if (value.currentTarget) {
+        if (value && value.currentTarget) {
           value = value.currentTarget.value
         }
         searchItem.value = value

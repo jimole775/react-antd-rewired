@@ -9,6 +9,7 @@ import {
 import columns from './columns'
 import moment from 'moment'
 // import EditForm from './forms/editForm'
+import StockSelect from '@/components/StockSelect'
 const color = {
   red: '#ff5858',
   green: '#00c900',
@@ -29,10 +30,10 @@ class DealsComponent extends Component {
       {
         title: '股票',
         key: 'stock',
-        component: Input,
-        default: '',
+        default: null,
+        component: StockSelect,
         style: {},
-        required: false,
+        required: true,
       },
       {
         title: '日期',

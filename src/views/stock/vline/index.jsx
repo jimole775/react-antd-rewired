@@ -7,6 +7,7 @@ import {
 import { getVline } from '@/api/stocks'
 import TTable from '@/components/TTable'
 import columns from './columns'
+import StockSelect from '@/components/StockSelect'
 // import EditForm from './forms/editForm'
 const color = {
   red: '#ff5858',
@@ -27,9 +28,10 @@ class VlineComponent extends Component {
       {
         title: '股票',
         key: 'stock',
-        component: Input,
-        default: '',
-        style: {}
+        default: null,
+        component: StockSelect,
+        style: {},
+        required: true,
       },
       {
         title: '日期',

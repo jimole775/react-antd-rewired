@@ -1,5 +1,6 @@
 import * as types from "../action-types";
 const initState = {
+  currentStock: '',
   finalDealDate: '',
   usetoStocks: [],
   kline: {},
@@ -7,6 +8,11 @@ const initState = {
 }
 export default function stocks (state = initState, action) {
   switch (action.type) {
+    case types.STOCK_CURRENT:
+      return {
+        ...state,
+        currentStock: action.currentStock
+      }
     case types.STOCK_KLINE:
       return {
         ...state,

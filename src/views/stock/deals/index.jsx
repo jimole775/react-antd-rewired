@@ -4,7 +4,6 @@ import { getDeals } from '@/api/stocks'
 import TTable from '@/components/TTable'
 import columns from './columns'
 import moment from 'moment'
-import DealChart from '@/components/DealChart'
 import StockSelect from '@/components/StockSelect'
 import {
   Input,
@@ -47,7 +46,7 @@ class DealsComponent extends Component {
         required: true,
       },
       {
-        title: '额度（万）',
+        title: '额度(万)',
         key: 'gradient',
         component: Input,
         default: '',

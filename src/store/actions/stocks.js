@@ -70,3 +70,10 @@ export const updateFinalDealDate = date => {
     date
   }
 }
+
+export const updateCurrentStock = stock => {
+  return {
+    type: types.STOCK_CURRENT,
+    currentStock: stock
+  }
+}
